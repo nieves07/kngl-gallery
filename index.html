@@ -18,7 +18,7 @@
 </head>
 <body class="text-gray-100 min-h-screen font-sans antialiased">
 
-    <div id="admin-badge" class="bg-purple-900 text-purple-200 text-center text-xs py-1 hidden font-semibold tracking-wider animate__animated animate__fadeInDown">
+    <div id="admin-badge" class="bg-purple-900 text-purple-200 text-center text-xs py-1 hidden font-semibold tracking-wider">
         YÖNETİCİ MODU AKTİF • <button onclick="logout()" class="underline hover:text-white">Çıkış Yap</button>
     </div>
 
@@ -39,7 +39,7 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-12">
-        <div class="text-center mb-16 animate__animated animate__fadeIn">
+        <div class="text-center mb-16">
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">Şehir Günlükleri & Galeri</h1>
             <p class="text-gray-400 max-w-xl mx-auto text-sm">Los Santos sokaklarından en özel anlar ve unutulmaz anılar.</p>
         </div>
@@ -48,32 +48,43 @@
             <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
         </div>
 
-        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8 hidden"></div>
+        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hidden"></div>
+
+        <div id="pagination-container" class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-16 hidden">
+            <button id="prev-btn" onclick="changePage(-1)" class="w-full sm:w-auto px-4 py-2 bg-gray-900 border border-purple-950/60 hover:border-purple-500/50 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:pointer-events-none">
+                ← Önceki
+            </button>
+            
+            <div id="page-numbers" class="flex items-center space-x-2 overflow-x-auto max-w-full px-2 py-1"></div>
+            
+            <button id="next-btn" onclick="changePage(1)" class="w-full sm:w-auto px-4 py-2 bg-gray-900 border border-purple-950/60 hover:border-purple-500/50 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:pointer-events-none">
+                Sonraki →
+            </button>
+        </div>
 
         <div id="no-images" class="text-center py-20 hidden">
             <p class="text-gray-500 text-lg">Henüz şehirden bir fotoğraf paylaşılmadı.</p>
         </div>
     </main>
 
-    <div id="image-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0" onclick="closeModal()">
+    <div id="image-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeModal()">
         <button class="absolute top-6 right-6 text-white text-3xl">&times;</button>
         <div class="max-w-5xl w-full max-h-[85vh] flex flex-col items-center" onclick="event.stopPropagation()">
-            <img id="modal-img" src="" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl border border-white/10">
+            <img id="modal-img" src="" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl">
             <p id="modal-caption" class="text-gray-300 text-lg mt-4 font-medium tracking-wide"></p>
         </div>
     </div>
 
     <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeAdminModal()">
-        <div class="max-w-md w-full bg-gray-950 border border-purple-950 p-8 rounded-2xl shadow-2xl animate__animated animate__zoomIn" onclick="event.stopPropagation()">
+        <div class="max-w-md w-full bg-gray-950 border border-purple-950 p-8 rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
             
             <div id="login-section">
                 <div class="text-center mb-6">
                     <h2 class="text-2xl font-bold text-white">Yönetici Girişi</h2>
-                    <p class="text-gray-400 text-xs mt-1">Galeriye erişmek için şifreyi girin</p>
                 </div>
                 <div class="space-y-4">
                     <input type="password" id="admin-password" placeholder="Erişim Şifresi" class="w-full bg-gray-900 border border-gray-800 focus:border-purple-500 rounded-xl px-4 py-3 text-white focus:outline-none">
-                    <button onclick="checkPassword()" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 font-semibold text-white py-3 rounded-xl shadow-lg">Giriş Yap</button>
+                    <button onclick="checkPassword()" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl">Giriş Yap</button>
                     <p id="login-error" class="text-red-500 text-xs text-center hidden">Hatalı şifre girdiniz!</p>
                 </div>
             </div>
@@ -81,30 +92,29 @@
             <div id="upload-section" class="hidden">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-white">Yeni Fotoğraf Ekle</h2>
-                    <p class="text-gray-400 text-xs mt-1">Görsel seçin veya direkt URL yapıştırın.</p>
                 </div>
                 <div class="space-y-5">
                     <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-800">
-                        <button onclick="switchUploadMethod('file')" id="btn-method-file" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white transition-all">Dosya Yükle</button>
-                        <button onclick="switchUploadMethod('url')" id="btn-method-url" class="flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400 transition-all">URL Yapıştır</button>
+                        <button onclick="switchUploadMethod('file')" id="btn-method-file" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white">Dosya Yükle</button>
+                        <button onclick="switchUploadMethod('url')" id="btn-method-url" class="flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400">URL Yapıştır</button>
                     </div>
 
                     <div id="input-file-container" class="space-y-2">
                         <label class="block text-xs font-semibold text-gray-400 uppercase">Görsel Seç</label>
-                        <input type="file" id="img-file" accept="image/*" class="w-full bg-gray-900 border border-gray-800 focus:border-purple-500 rounded-xl px-4 py-2.5 text-sm text-gray-400 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-purple-900/40 file:text-purple-300 hover:file:bg-purple-900/60">
+                        <input type="file" id="img-file" accept="image/*" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-400">
                     </div>
 
                     <div id="input-url-container" class="space-y-2 hidden">
                         <label class="block text-xs font-semibold text-gray-400 uppercase">Resim URL Adresi</label>
-                        <input type="url" id="img-url" placeholder="https://... veya Discord linki" class="w-full bg-gray-900 border border-gray-800 focus:border-purple-500 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
+                        <input type="url" id="img-url" placeholder="https://..." class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Açıklama / Başlık</label>
-                        <input type="text" id="img-caption" placeholder="Örn: Otoban Gazlaması" class="w-full bg-gray-900 border border-gray-800 focus:border-purple-500 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Açıklama</label>
+                        <input type="text" id="img-caption" placeholder="Açıklama yazın" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
                     </div>
 
-                    <button onclick="submitImage()" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 font-semibold text-white py-3 rounded-xl shadow-lg transition-all">Galeriye Ekle</button>
+                    <button onclick="submitImage()" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl shadow-lg">Galeriye Ekle</button>
                 </div>
             </div>
 
@@ -114,26 +124,25 @@
     <script>
         const PASSPHRASE = "KNGL123"; 
         
-        // 🛠️ SUPABASE AYARLARIN (2. Adımda aldığın bilgileri buraya gir)
+        // 🔑 ANAHTARLARINI BURAYA YENİDEN YAZ:
         const SUPABASE_URL = "https://mmkusfynqosmvpsbwewc.supabase.co"; 
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ta3VzZnlucW9zbXZwc2J3ZXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNzg0MzEsImV4cCI6MjA5ODc1NDQzMX0.pPtgFT_JdQaVqftGWTQxTUnulQ8WUNvrbdy5AG4jy-4"; 
-        
-        // 🛠️ IMGBB AYARIN (Kendine ait güncel API anahtarın)
         const IMGBB_KEY = "b465ee87375e9aabe31f96eeb810e227";
 
-        let localImages = [];
+        let allImages = [];
+        let currentPage = 1;
+        const itemsPerPage = 20; // 📌 HER SAYFADA GÖZÜKECEK GÖRSEL SAYISI (20 YAPILDI)
         let activeMethod = 'file';
 
-        document.addEventListener("DOMContentLoaded", loadGallery);
+        document.addEventListener("DOMContentLoaded", fetchGalleryData);
 
-        async function loadGallery() {
+        async function fetchGalleryData() {
             const loadingEl = document.getElementById('loading');
-            const galleryEl = document.getElementById('gallery');
             const noImagesEl = document.getElementById('no-images');
-            const isAdmin = sessionStorage.getItem('kngl_logged') === 'true';
+            const galleryEl = document.getElementById('gallery');
+            const paginationEl = document.getElementById('pagination-container');
 
             try {
-                // Verileri Supabase üzerinden tarihe göre ters sıralı çekiyoruz (En yeni en üstte)
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/gallery?select=*&order=created_at.desc`, {
                     headers: {
                         "apikey": SUPABASE_KEY,
@@ -142,90 +151,145 @@
                 });
                 
                 if (res.ok) {
-                    localImages = await res.json();
+                    allImages = await res.json();
                 } else {
-                    localImages = [];
+                    console.error("Veri çekme hatası:", await res.text());
+                    allImages = [];
                 }
 
                 loadingEl.classList.add('hidden');
 
-                if (localImages.length === 0) {
+                if (allImages.length === 0) {
                     noImagesEl.classList.remove('hidden');
                     galleryEl.classList.add('hidden');
+                    paginationEl.classList.add('hidden');
                     return;
                 }
 
                 noImagesEl.classList.add('hidden');
-                galleryEl.innerHTML = '';
-                
-                localImages.forEach((img) => {
-                    if(!img || !img.url) return;
-                    const card = document.createElement('div');
-                    card.className = "gallery-card relative bg-gray-950/40 border border-purple-950/60 rounded-xl overflow-hidden cursor-pointer neon-border hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1 animate__animated animate__fadeIn";
-                    
-                    card.addEventListener('click', (e) => {
-                        if (!e.target.closest('.delete-btn')) {
-                            openModal(img.url, img.caption || "");
-                        }
-                    });
-                    
-                    card.innerHTML = `
-                        ${isAdmin ? `
-                            <button data-id="${img.id}" class="delete-btn absolute top-3 right-3 z-10 bg-red-600/90 hover:bg-red-700 text-white p-2 rounded-lg backdrop-blur-sm transition-all border border-red-500 shadow-lg" title="Bu Görseli Sil">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        ` : ''}
-                        
-                        <div class="aspect-video w-full overflow-hidden bg-gray-900 flex items-center justify-center">
-                            <img src="${img.url}" alt="KNGL" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a102f/ffffff?text=Resim+Yuklenemedi'">
-                        </div>
-                        ${img.caption ? `
-                            <div class="p-4 border-t border-purple-950/40 bg-black/20">
-                                <p class="text-sm text-gray-300 font-medium truncate">${img.caption}</p>
-                            </div>
-                        ` : ''}
-                    `;
-                    galleryEl.appendChild(card);
-                });
-
-                if (isAdmin) {
-                    document.querySelectorAll('.delete-btn').forEach(button => {
-                        button.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const id = button.getAttribute('data-id');
-                            deleteImage(id);
-                        });
-                    });
-                }
-
-                galleryEl.classList.remove('hidden');
+                renderPage();
             } catch (error) {
-                console.error(error);
-                loadingEl.innerHTML = `<p class="text-red-400 text-sm p-4 bg-red-950/20 border border-red-900/50 rounded-xl">Veritabanı bağlantı sorunu oluştu.</p>`;
-            }
-            
-            if(isAdmin) {
-                showAdminInterface();
+                console.error("Ağ Hatası:", error);
+                loadingEl.innerHTML = `<p class="text-red-400 text-sm p-4 bg-red-950/20 border border-red-900/50 rounded-xl">Bağlantı kurulamadı.</p>`;
             }
         }
 
+        function renderPage() {
+            const galleryEl = document.getElementById('gallery');
+            const isAdmin = sessionStorage.getItem('kngl_logged') === 'true';
+
+            galleryEl.innerHTML = '';
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageItems = allImages.slice(startIndex, endIndex);
+
+            pageItems.forEach((img) => {
+                if(!img || !img.url) return;
+                const card = document.createElement('div');
+                card.className = "gallery-card relative bg-gray-950/40 border border-purple-950/60 rounded-xl overflow-hidden cursor-pointer neon-border hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1";
+                
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.delete-btn')) {
+                        openModal(img.url, img.caption || "");
+                    }
+                });
+                
+                card.innerHTML = `
+                    ${isAdmin ? `
+                        <button data-id="${img.id}" class="delete-btn absolute top-3 right-3 z-10 bg-red-600/90 hover:bg-red-700 text-white p-2 rounded-lg border border-red-500 shadow-lg" title="Sil">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    ` : ''}
+                    <div class="aspect-video w-full overflow-hidden bg-gray-900 flex items-center justify-center">
+                        <img src="${img.url}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a102f/ffffff?text=Resim+Yuklenemedi'">
+                    </div>
+                    ${img.caption ? `<div class="p-4 border-t border-purple-950/40 bg-black/20"><p class="text-sm text-gray-300 font-medium truncate">${img.caption}</p></div>` : ''}
+                `;
+                galleryEl.appendChild(card);
+            });
+
+            if (isAdmin) {
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = button.getAttribute('data-id');
+                        deleteImage(id);
+                    });
+                });
+                showAdminInterface();
+            }
+
+            galleryEl.classList.remove('hidden');
+            updatePaginationControls();
+        }
+
+        function updatePaginationControls() {
+            const paginationEl = document.getElementById('pagination-container');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const pageNumbersEl = document.getElementById('page-numbers');
+
+            const totalPages = Math.ceil(allImages.length / itemsPerPage);
+
+            if (totalPages <= 1) {
+                paginationEl.classList.add('hidden');
+                return;
+            }
+
+            paginationEl.classList.remove('hidden');
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+
+            // Sayfa numaralarını dinamik ve tıklanabilir oluşturma
+            pageNumbersEl.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.innerText = i;
+                if (i === currentPage) {
+                    btn.className = "px-3.5 py-1.5 bg-purple-600 border border-purple-500 text-white rounded-lg text-sm font-bold shadow-lg transition-all";
+                } else {
+                    btn.className = "px-3.5 py-1.5 bg-gray-950 border border-purple-950/60 text-gray-400 hover:text-purple-400 hover:border-purple-500/30 rounded-lg text-sm font-medium transition-all";
+                }
+                btn.onclick = () => {
+                    currentPage = i;
+                    renderPage();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                pageNumbersEl.appendChild(btn);
+            }
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            renderPage();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         async function deleteImage(id) {
-            if (!confirm("Bu fotoğrafı galeriden kalıcı olarak silmek istediğinize emin misiniz?")) return;
-            
+            if (!confirm("Bu fotoğrafı kalıcı olarak silmek istiyor musunuz?")) return;
             try {
-                await fetch(`${SUPABASE_URL}/rest/v1/gallery?id=eq.${id}`, {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/gallery?id=eq.${id}`, {
                     method: 'DELETE',
                     headers: {
                         "apikey": SUPABASE_KEY,
                         "Authorization": `Bearer ${SUPABASE_KEY}`
                     }
                 });
-                loadGallery();
+                if(res.ok) {
+                    allImages = allImages.filter(img => img.id != id);
+                    const totalPages = Math.ceil(allImages.length / itemsPerPage);
+                    if (currentPage > totalPages && currentPage > 1) {
+                        currentPage = totalPages;
+                    }
+                    renderPage();
+                } else {
+                    alert("Silme hatası: " + await res.text());
+                }
             } catch (error) {
-                console.error(error);
-                alert("Silme işlemi başarısız oldu.");
+                alert("Silme sırasında bağlantı hatası oluştu.");
             }
         }
 
@@ -235,15 +299,14 @@
             const btnUrl = document.getElementById('btn-method-url');
             const inputFile = document.getElementById('input-file-container');
             const inputUrl = document.getElementById('input-url-container');
-
             if(method === 'file') {
-                btnFile.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white transition-all";
-                btnUrl.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400 transition-all";
+                btnFile.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white";
+                btnUrl.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400";
                 inputFile.classList.remove('hidden');
                 inputUrl.classList.add('hidden');
             } else {
-                btnUrl.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white transition-all";
-                btnFile.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400 transition-all";
+                btnUrl.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white";
+                btnFile.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400";
                 inputUrl.classList.remove('hidden');
                 inputFile.classList.add('hidden');
             }
@@ -261,55 +324,36 @@
         }
 
         function checkPassword() {
-            const input = document.getElementById('admin-password').value;
-            const error = document.getElementById('login-error');
-            if (input === PASSPHRASE) {
+            if (document.getElementById('admin-password').value === PASSPHRASE) {
                 sessionStorage.setItem('kngl_logged', 'true');
-                error.classList.add('hidden');
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('upload-section').classList.remove('hidden');
                 showAdminInterface();
-                loadGallery();
+                renderPage();
             } else {
-                error.classList.remove('hidden');
+                document.getElementById('login-error').classList.remove('hidden');
             }
         }
 
         function showAdminInterface() {
             document.getElementById('admin-badge').classList.remove('hidden');
-            const actionBtn = document.getElementById('action-btn');
-            actionBtn.innerText = "Fotoğraf Ekle";
-            actionBtn.classList.remove('text-gray-400', 'border-gray-800');
-            actionBtn.classList.add('text-purple-400', 'border-purple-500/40');
+            document.getElementById('action-btn').innerText = "Fotoğraf Ekle";
         }
 
-        function logout() {
-            sessionStorage.removeItem('kngl_logged');
-            location.reload();
-        }
-
+        function logout() { sessionStorage.removeItem('kngl_logged'); location.reload(); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
-        
         function openModal(url, caption) {
-            const modal = document.getElementById('image-modal');
             document.getElementById('modal-img').src = url;
             document.getElementById('modal-caption').innerText = caption;
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            document.getElementById('image-modal').classList.remove('hidden');
         }
-        
-        function closeModal() {
-            const modal = document.getElementById('image-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
+        function closeModal() { document.getElementById('image-modal').classList.add('hidden'); }
 
         async function submitImage() {
             const fileInput = document.getElementById('img-file');
             const urlInput = document.getElementById('img-url');
             const captionInput = document.getElementById('img-caption');
             const btn = document.getElementById('submit-btn');
-            
             const caption = captionInput.value.trim();
             let finalUrl = "";
 
@@ -319,11 +363,7 @@
             try {
                 if (activeMethod === 'file') {
                     const file = fileInput.files[0];
-                    if (!file) {
-                        alert("Lütfen bir dosya seçin!");
-                        resetButton();
-                        return;
-                    }
+                    if (!file) { alert("Lütfen bir dosya seçin!"); resetButton(); return; }
 
                     const formData = new FormData();
                     formData.append("image", file);
@@ -333,52 +373,49 @@
                         body: formData
                     });
 
-                    if(!uploadRes.ok) throw new Error("Görsel sunucu hatası.");
+                    if(!uploadRes.ok) {
+                        alert("Görsel sunucuya yüklenemedi. API Key'inizi kontrol edin.");
+                        resetButton();
+                        return;
+                    }
                     const uploadData = await uploadRes.json();
                     if(uploadData.success) finalUrl = uploadData.data.url;
                 } else {
                     finalUrl = urlInput.value.trim();
-                    if (!finalUrl.startsWith('http')) {
-                        alert("Geçerli bir bağlantı adresi girin!");
-                        resetButton();
-                        return;
-                    }
+                    if (!finalUrl.startsWith('http')) { alert("Geçerli bir URL girin!"); resetButton(); return; }
                 }
 
-                if (!finalUrl) throw new Error("URL oluşturulamadı.");
-
-                // Supabase veritabanına doğrudan güvenli kayıt yapıyoruz
                 const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/gallery`, {
                     method: 'POST',
                     headers: {
                         "apikey": SUPABASE_KEY,
                         "Authorization": `Bearer ${SUPABASE_KEY}`,
                         "Content-Type": "application/json",
-                        "Prefer": "return=minimal"
+                        "Prefer": "return=representation"
                     },
                     body: JSON.stringify({ url: finalUrl, caption: caption })
                 });
 
-                if(!dbRes.ok) throw new Error("Veritabanına yazma hatası.");
+                if(!dbRes.ok) {
+                    alert("Veritabanına kaydedilirken hata oluştu.");
+                    resetButton();
+                    return;
+                }
 
-                fileInput.value = '';
-                urlInput.value = '';
-                captionInput.value = '';
-                
+                fileInput.value = ''; urlInput.value = ''; captionInput.value = '';
                 closeAdminModal();
-                loadGallery();
-
+                
+                const newImg = await dbRes.json();
+                allImages.unshift(newImg[0]);
+                currentPage = 1;
+                renderPage();
             } catch (error) {
-                console.error(error);
-                alert("Yükleme işlemi başarısız. API anahtarlarınızı veya Supabase ayarlarını kontrol edin.");
+                alert("Bağlantı hatası oluştu: " + error.message);
             } finally {
                 resetButton();
             }
 
-            function resetButton() {
-                btn.disabled = false;
-                btn.innerText = "Galeriye Ekle";
-            }
+            function resetButton() { btn.disabled = false; btn.innerText = "Galeriye Ekle"; }
         }
     </script>
 </body>
