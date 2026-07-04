@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNGL RP | Los Santos Gallery</title>
+    <title>KNGL RP Gallery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
@@ -41,7 +41,7 @@
     <main class="max-w-7xl mx-auto px-6 py-12">
         <div class="text-center mb-16">
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">Şehir Günlükleri & Galeri</h1>
-            <p class="text-gray-400 max-w-xl mx-auto text-sm">Los Santos sokaklarından en özel anlar ve unutulmaz anılar.</p>
+            <p class="text-gray-400 max-w-xl mx-auto text-sm">KNGLRP  sokaklarından en özel anlar ve unutulmaz anılar.</p>
         </div>
 
         <div id="loading" class="flex justify-center items-center py-20">
@@ -54,9 +54,7 @@
             <button id="prev-btn" onclick="changePage(-1)" class="w-full sm:w-auto px-4 py-2 bg-gray-900 border border-purple-950/60 hover:border-purple-500/50 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:pointer-events-none">
                 ← Önceki
             </button>
-            
             <div id="page-numbers" class="flex items-center space-x-2 overflow-x-auto max-w-full px-2 py-1"></div>
-            
             <button id="next-btn" onclick="changePage(1)" class="w-full sm:w-auto px-4 py-2 bg-gray-900 border border-purple-950/60 hover:border-purple-500/50 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:pointer-events-none">
                 Sonraki →
             </button>
@@ -91,30 +89,35 @@
 
             <div id="upload-section" class="hidden">
                 <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-white">Yeni Fotoğraf Ekle</h2>
+                    <h2 class="text-2xl font-bold text-white">Toplu Fotoğraf Ekle</h2>
                 </div>
                 <div class="space-y-5">
                     <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-800">
-                        <button onclick="switchUploadMethod('file')" id="btn-method-file" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white">Dosya Yükle</button>
-                        <button onclick="switchUploadMethod('url')" id="btn-method-url" class="flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400">URL Yapıştır</button>
+                        <button onclick="switchUploadMethod('file')" id="btn-method-file" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white">Çoklu Dosya Yükle</button>
+                        <button onclick="switchUploadMethod('url')" id="btn-method-url" class="flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400">Çoklu URL Yapıştır</button>
                     </div>
 
                     <div id="input-file-container" class="space-y-2">
-                        <label class="block text-xs font-semibold text-gray-400 uppercase">Görsel Seç</label>
-                        <input type="file" id="img-file" accept="image/*" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-400">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase">Görselleri Seç (Birden fazla seçebilirsiniz)</label>
+                        <input type="file" id="img-file" accept="image/*" multiple class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-400">
                     </div>
 
                     <div id="input-url-container" class="space-y-2 hidden">
-                        <label class="block text-xs font-semibold text-gray-400 uppercase">Resim URL Adresi</label>
-                        <input type="url" id="img-url" placeholder="https://..." class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase">Resim URL Adresleri (Her satıra bir link gelecek şekilde)</label>
+                        <textarea id="img-url" rows="4" placeholder="https://link1.com&#10;https://link2.com" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm font-mono"></textarea>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Açıklama</label>
-                        <input type="text" id="img-caption" placeholder="Açıklama yazın" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Ortak Açıklama (İsteğe Bağlı)</label>
+                        <input type="text" id="img-caption" placeholder="Tüm bu görseller için ortak açıklama" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
+                        <p class="text-gray-500 text-[10px] mt-1">Boş bırakırsanız sadece fotoğraflar yüklenir.</p>
                     </div>
 
-                    <button onclick="submitImage()" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl shadow-lg">Galeriye Ekle</button>
+                    <div id="upload-progress" class="text-xs text-purple-400 font-semibold text-center hidden py-1 bg-purple-950/20 border border-purple-900/30 rounded-lg">
+                        Yükleniyor: <span id="progress-text">0 / 0</span>
+                    </div>
+
+                    <button onclick="submitBatchImages()" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl shadow-lg disabled:opacity-50">Galeriye Ekle</button>
                 </div>
             </div>
 
@@ -122,7 +125,7 @@
     </div>
 
     <script>
-        const PASSPHRASE = "KNGL123"; 
+        const PASSPHRASE = "nieves1312"; 
         
         // 🔑 ANAHTARLARINI BURAYA YENİDEN YAZ:
         const SUPABASE_URL = "https://mmkusfynqosmvpsbwewc.supabase.co"; 
@@ -131,7 +134,7 @@
 
         let allImages = [];
         let currentPage = 1;
-        const itemsPerPage = 20; // 📌 HER SAYFADA GÖZÜKECEK GÖRSEL SAYISI (20 YAPILDI)
+        const itemsPerPage = 20; 
         let activeMethod = 'file';
 
         document.addEventListener("DOMContentLoaded", fetchGalleryData);
@@ -243,7 +246,6 @@
             prevBtn.disabled = currentPage === 1;
             nextBtn.disabled = currentPage === totalPages;
 
-            // Sayfa numaralarını dinamik ve tıklanabilir oluşturma
             pageNumbersEl.innerHTML = '';
             for (let i = 1; i <= totalPages; i++) {
                 const btn = document.createElement('button');
@@ -349,41 +351,63 @@
         }
         function closeModal() { document.getElementById('image-modal').classList.add('hidden'); }
 
-        async function submitImage() {
+        // 🔥 TOPLU RESİM YÜKLEME FONKSİYONU
+        async function submitBatchImages() {
             const fileInput = document.getElementById('img-file');
             const urlInput = document.getElementById('img-url');
             const captionInput = document.getElementById('img-caption');
             const btn = document.getElementById('submit-btn');
+            const progressContainer = document.getElementById('upload-progress');
+            const progressText = document.getElementById('progress-text');
             const caption = captionInput.value.trim();
-            let finalUrl = "";
+            
+            let urlsToUpload = [];
 
             btn.disabled = true;
-            btn.innerText = "Yükleniyor...";
 
             try {
                 if (activeMethod === 'file') {
-                    const file = fileInput.files[0];
-                    if (!file) { alert("Lütfen bir dosya seçin!"); resetButton(); return; }
+                    const files = fileInput.files;
+                    if (files.length === 0) { alert("Lütfen en az bir dosya seçin!"); resetButton(); return; }
 
-                    const formData = new FormData();
-                    formData.append("image", file);
+                    progressContainer.classList.remove('hidden');
+                    progressText.innerText = `0 / ${files.length} (Dosyalar sunucuya gönderiliyor...)`;
 
-                    const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-                        method: "POST",
-                        body: formData
-                    });
+                    // Dosyaları sırayla ImgBB'ye yükle
+                    for (let i = 0; i < files.length; i++) {
+                        progressText.innerText = `${i} / ${files.length} - Dosya yükleniyor...`;
+                        const formData = new FormData();
+                        formData.append("image", files[i]);
 
-                    if(!uploadRes.ok) {
-                        alert("Görsel sunucuya yüklenemedi. API Key'inizi kontrol edin.");
-                        resetButton();
-                        return;
+                        const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        if (uploadRes.ok) {
+                            const uploadData = await uploadRes.json();
+                            if (uploadData.success) {
+                                urlsToUpload.push(uploadData.data.url);
+                            }
+                        }
                     }
-                    const uploadData = await uploadRes.json();
-                    if(uploadData.success) finalUrl = uploadData.data.url;
                 } else {
-                    finalUrl = urlInput.value.trim();
-                    if (!finalUrl.startsWith('http')) { alert("Geçerli bir URL girin!"); resetButton(); return; }
+                    // Textarea'daki linkleri satır satır böl, temizle ve boş olanları ele
+                    const rawLinks = urlInput.value.split('\n');
+                    urlsToUpload = rawLinks.map(link => link.trim()).filter(link => link.startsWith('http'));
+                    if (urlsToUpload.length === 0) { alert("Lütfen geçerli URL adresleri girin!"); resetButton(); return; }
                 }
+
+                if(urlsToUpload.length === 0) {
+                    alert("Yüklenecek görsel bulunamadı veya sunucu hatası oluştu.");
+                    resetButton();
+                    return;
+                }
+
+                progressText.innerText = `Veritabanına kaydediliyor...`;
+
+                // Supabase'e toplu (bulk) ekleme işlemi yapıyoruz (Tek istekte tüm listeyi yazar)
+                const payload = urlsToUpload.map(url => ({ url: url, caption: caption }));
 
                 const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/gallery`, {
                     method: 'POST',
@@ -393,29 +417,38 @@
                         "Content-Type": "application/json",
                         "Prefer": "return=representation"
                     },
-                    body: JSON.stringify({ url: finalUrl, caption: caption })
+                    body: JSON.stringify(payload)
                 });
 
                 if(!dbRes.ok) {
-                    alert("Veritabanına kaydedilirken hata oluştu.");
+                    alert("Görseller yüklendi ancak veritabanına kaydedilirken hata oluştu.");
                     resetButton();
                     return;
                 }
 
+                // Inputları temizle
                 fileInput.value = ''; urlInput.value = ''; captionInput.value = '';
                 closeAdminModal();
                 
-                const newImg = await dbRes.json();
-                allImages.unshift(newImg[0]);
+                // Yeni eklenen tüm resimleri listenin en başına koy ve 1. sayfayı yenile
+                const newImgs = await dbRes.json();
+                allImages = [...newImgs, ...allImages];
                 currentPage = 1;
                 renderPage();
+                
+                alert(`${urlsToUpload.length} adet görsel başarıyla galeriye eklendi!`);
+
             } catch (error) {
-                alert("Bağlantı hatası oluştu: " + error.message);
+                alert("Toplu yükleme sırasında hata oluştu: " + error.message);
             } finally {
                 resetButton();
             }
 
-            function resetButton() { btn.disabled = false; btn.innerText = "Galeriye Ekle"; }
+            function resetButton() { 
+                btn.disabled = false; 
+                btn.innerText = "Galeriye Ekle"; 
+                progressContainer.classList.add('hidden');
+            }
         }
     </script>
 </body>
