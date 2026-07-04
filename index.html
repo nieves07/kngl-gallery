@@ -7,62 +7,51 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
-    /* Kaydırma barını kitleme */
+    /* Kaydırma barını tamamen yok etmek için */
     html, body {
-        overflow: hidden; 
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Animasyon süresince kaydırma barını kilitler */
+        height: 100%;
+    }
+
+    #logo-preloader {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle, #1a1a2e 0%, #0d0e12 100%); /* Premium derinlik */
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.8s ease;
+    }
+
+    /* Logo Büyütme ve Neon Etkisi */
+    .logo-container h1 {
+        font-size: 6rem; /* Çok daha büyük */
+        letter-spacing: -0.05em;
+        text-shadow: 0 0 20px rgba(168, 85, 247, 0.5); /* Mor parlama */
+        color: white;
     }
 
     .fade-out {
         opacity: 0;
         pointer-events: none;
     }
-
-    /* Webkit tarayıcılar (Chrome, Safari, Edge, Opera) için */
-    ::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* Firefox için */
-    html {
-        scrollbar-width: none;
-    }
-
-    /* IE ve Edge (eski sürümler) için */
-    html {
-        -ms-overflow-style: none;
-    }
-        body {
-            background-color: #0d0e12;
-            background-image: radial-gradient(circle at 50% 0%, #1f1235 0%, #0d0e12 70%);
-        }
-        .neon-border { box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
-        .gallery-card img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .gallery-card:hover img { transform: scale(1.05); }
-        .progress-glow { box-shadow: 0 0 10px rgba(168, 85, 247, 0.6); }
-        
-        /* 🌌 Zarif Sayfa Geçiş Efekti */
-        .page-transition {
-            opacity: 0;
-            transform: translateY(10px);
-            animation: fadeInUp 0.5s forwards cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-           
-            </style> 
+</style>
           }
         }
 </head>
 <body class="text-gray-100 min-h-screen font-sans antialiased">
 
-<div id="logo-preloader" class="fixed inset-0 bg-[#0d0e12] z-[9999] flex items-center justify-center transition-opacity duration-800">
+<div id="logo-preloader">
     <div class="logo-container text-center">
-        <h1 class="text-6xl font-black text-white">KNGL<span class="text-purple-500">RP</span></h1>
+        <h1 class="font-black">KNGL<span class="text-purple-500">RP</span></h1>
         <div class="h-1 w-24 bg-purple-600 mx-auto mt-4 rounded-full shadow-[0_0_15px_#9333ea]"></div>
     </div>
 </div>
+
+
     
 
     <div id="admin-badge" class="bg-purple-900 text-purple-200 text-center text-xs py-1 hidden font-semibold tracking-wider">
@@ -765,6 +754,21 @@ function checkAdmin() {
         sessionStorage.setItem('kngl_logged', 'true');
     }
 }
+
+        window.addEventListener('load', () => {
+    const preloader = document.getElementById('logo-preloader');
+    
+    setTimeout(() => {
+        preloader.classList.add('fade-out');
+        
+        // Animasyon bittikten sonra kaydırma çubuğunu serbest bırak
+        setTimeout(() => {
+            document.documentElement.style.overflow = "auto";
+            document.body.style.overflow = "auto";
+            preloader.style.display = 'none';
+        }, 800); 
+    }, 2000); // 2.5 saniye göster
+});
         
     </script>
 </body>
