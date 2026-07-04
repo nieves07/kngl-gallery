@@ -114,23 +114,34 @@
     <script>
         const PASSPHRASE = "KNGL123"; 
         const IMGBB_KEY = "c8dfb2a19ff29df99b1d62c90bc50486";
+        
+        // 🌍 Herkesin ortak görebileceği bulut veri anahtarı (Engellenmez, kilitlenmez)
+        const BIN_URL = "https://api.jsonbin.io/v3/b/663d2bafe41b4d34e4f1659f";
 
         let localImages = [];
         let activeMethod = 'file';
 
         document.addEventListener("DOMContentLoaded", loadGallery);
 
-        // --- TARAYICI TABANLI GÜVENLİ VERİ YÜKLEME ---
-        function loadGallery() {
+        // --- GLOBAL ORTAK VERİLERİ YÜKLEME ---
+        async function loadGallery() {
             const loadingEl = document.getElementById('loading');
             const galleryEl = document.getElementById('gallery');
             const noImagesEl = document.getElementById('no-images');
             const isAdmin = sessionStorage.getItem('kngl_logged') === 'true';
 
             try {
-                // Verileri tarayıcı hafızasından engelsizce çekiyoruz
-                const savedData = localStorage.getItem('kngl_shared_gallery_v10');
-                localImages = savedData ? JSON.parse(savedData) : [];
+                // Herkes için tek bir merkezden veriyi çekiyoruz
+                const res = await fetch(`${BIN_URL}/latest`, {
+                    headers: { "X-Master-Key": "$2a$10$WpMhK7P8lU1hKzS3GOnYkeZ6P7.tFpBqJ7aKxXFz1p6D1yvH5pS1i" }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    localImages = data.record.images || [];
+                } else {
+                    localImages = [];
+                }
 
                 loadingEl.classList.add('hidden');
 
@@ -188,7 +199,7 @@
                 galleryEl.classList.remove('hidden');
             } catch (error) {
                 console.error(error);
-                loadingEl.innerHTML = `<p class="text-red-400 text-sm p-4 bg-red-950/20 border border-red-900/50 rounded-xl">Sistem yüklenirken bir önbellek hatası oluştu.</p>`;
+                loadingEl.innerHTML = `<p class="text-red-400 text-sm p-4 bg-red-950/20 border border-red-900/50 rounded-xl">Galeri yüklenirken bir ağ bağlantı sorunu oluştu.</p>`;
             }
             
             if(isAdmin) {
@@ -196,12 +207,27 @@
             }
         }
 
-        // --- GÖRSELİ KALICI OLARAK SİLME ---
-        function deleteImage(index) {
+        // --- ORTAK BULUTTAN RESİM SİLME ---
+        async function deleteImage(index) {
             if (!confirm("Bu fotoğrafı galeriden kalıcı olarak silmek istediğinize emin misiniz?")) return;
-            localImages.splice(index, 1);
-            localStorage.setItem('kngl_shared_gallery_v10', JSON.stringify(localImages));
-            loadGallery();
+            
+            try {
+                localImages.splice(index, 1);
+                
+                await fetch(BIN_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': "$2a$10$WpMhK7P8lU1hKzS3GOnYkeZ6P7.tFpBqJ7aKxXFz1p6D1yvH5pS1i"
+                    },
+                    body: JSON.stringify({ images: localImages })
+                });
+
+                loadGallery();
+            } catch (error) {
+                console.error(error);
+                alert("Silme işlemi bulut senkronizasyonu nedeniyle başarısız oldu.");
+            }
         }
 
         function switchUploadMethod(method) {
@@ -279,7 +305,7 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-        // --- GÖRSELİ EKLEME VE ÖNBELLEĞE ALMA ---
+        // --- RESİM EKLEME VE ORTAK BULUTA GÖNDERME ---
         async function submitImage() {
             const fileInput = document.getElementById('img-file');
             const urlInput = document.getElementById('img-url');
@@ -326,8 +352,15 @@
                 const newImg = { url: finalUrl, caption: caption, date: Date.now() };
                 localImages.unshift(newImg);
                 
-                // Kalıcı lokal depolama senkronizasyonu
-                localStorage.setItem('kngl_shared_gallery_v10', JSON.stringify(localImages));
+                // Güncel listeyi herkesin erişebileceği ortak buluta yazıyoruz
+                await fetch(BIN_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': "$2a$10$WpMhK7P8lU1hKzS3GOnYkeZ6P7.tFpBqJ7aKxXFz1p6D1yvH5pS1i"
+                    },
+                    body: JSON.stringify({ images: localImages })
+                });
 
                 fileInput.value = '';
                 urlInput.value = '';
@@ -338,7 +371,7 @@
 
             } catch (error) {
                 console.error(error);
-                alert("Görsel yüklenirken bir sorun oluştu.");
+                alert("Bulut senkronizasyonu sırasında hata oluştu.");
             } finally {
                 resetButton();
             }
