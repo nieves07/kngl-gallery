@@ -127,6 +127,8 @@
     
     <input type="file" id="img-file" accept="image/*" multiple class="hidden">
 </div>
+            <div id="preview-container" class="grid grid-cols-3 gap-2 mt-4 mb-4">
+    </div>
             <div id="upload-section" class="hidden">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-white">Toplu Fotoğraf Ekle</h2>
@@ -695,12 +697,30 @@ dropZone.addEventListener('dragleave', () => {
 dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('border-purple-300', 'bg-purple-900/20');
-    if (e.dataTransfer.files.length) {
-        fileInput.files = e.dataTransfer.files;
-        alert(e.dataTransfer.files.length + " adet dosya seçildi.");
+    
+    const files = e.dataTransfer.files;
+    if (files.length) {
+        fileInput.files = files; // Dosyaları input'a ata
+        showPreviews(files);    // Önizlemeleri göster
     }
 });
 
+// Önizleme Fonksiyonu
+function showPreviews(files) {
+    const previewContainer = document.getElementById('preview-container');
+    previewContainer.innerHTML = ''; // Öncekileri temizle
+
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const div = document.createElement('div');
+            div.className = "aspect-square rounded-lg overflow-hidden border border-purple-500/30";
+            div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+            previewContainer.appendChild(div);
+        }
+        reader.readAsDataURL(file);
+    });
+}
 // --- GİRİŞ YAPILDIĞINDA EKRANI DEĞİŞTİRME ---
 // Mevcut checkAdmin fonksiyonunun içine şu iki satırı ekle:
 function checkAdmin() {
