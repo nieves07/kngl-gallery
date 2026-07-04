@@ -737,6 +737,62 @@ function checkAdmin() {
         alert("Yanlış şifre!");
     }
 }
+
+let selectedFiles = [];
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('img-file');
+const previewContainer = document.getElementById('preview-container');
+
+// Tıklama ile dosya seçiciyi aç
+dropZone.onclick = () => fileInput.click();
+
+// Sürükle-Bırak Olayları
+dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-purple-300'); };
+dropZone.ondragleave = () => dropZone.classList.remove('border-purple-300');
+dropZone.ondrop = (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-purple-300');
+    handleFiles(e.dataTransfer.files);
+};
+
+// Dosya seçildiğinde (normal file input)
+fileInput.onchange = (e) => handleFiles(e.target.files);
+
+function handleFiles(files) {
+    selectedFiles = [...selectedFiles, ...Array.from(files)];
+    renderPreviews();
+}
+
+function renderPreviews() {
+    previewContainer.innerHTML = '';
+    selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const div = document.createElement('div');
+            div.className = "relative aspect-square rounded-lg overflow-hidden border border-purple-500/30";
+            div.innerHTML = `
+                <img src="${e.target.result}" class="w-full h-full object-cover">
+                <button onclick="removeFile(${index})" class="absolute top-0 right-0 bg-red-600 text-white text-[10px] w-5 h-5">X</button>
+            `;
+            previewContainer.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderPreviews();
+}
+
+// Giriş başarılı olunca ekran değiştir
+function checkAdmin() {
+    // ... şifre kontrolün ...
+    if (sifreDogru) {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('upload-section').classList.remove('hidden');
+    }
+}
         
     </script>
 </body>
