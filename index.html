@@ -156,6 +156,35 @@
     </div>
 
     <script>
+
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('img-file');
+
+// Drop zone tıklandığında input'u tetikle
+dropZone.addEventListener('click', () => fileInput.click());
+
+// Sürükleme olaylarını yönet
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('border-purple-300');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('border-purple-300');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-purple-300');
+    
+    // Bırakılan dosyaları yakala ve input'a ata
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        // Opsiyonel: Kullanıcıya kaç dosya seçtiğini gösteren bir alert veya metin eklenebilir
+        alert(`${e.dataTransfer.files.length} dosya seçildi. Şimdi 'Yüklemeyi Başlat'a basabilirsin.`);
+    }
+});
+        
         const PASSPHRASE = "nieves1312"; 
         
         // 🔑 ANAHTARLARINI BURAYA YENİDEN YAZ:
@@ -672,36 +701,6 @@ async function saveCaption() {
         btn.innerText = "Kaydet";
     }
 }
-
-
-const dropZone = document.getElementById('drop-zone');
-const fileInput = document.getElementById('img-file');
-
-// Drop zone tıklandığında input'u tetikle
-dropZone.addEventListener('click', () => fileInput.click());
-
-// Sürükleme olaylarını yönet
-dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.classList.add('border-purple-300');
-});
-
-dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('border-purple-300');
-});
-
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('border-purple-300');
-    
-    // Bırakılan dosyaları yakala ve input'a ata
-    if (e.dataTransfer.files.length) {
-        fileInput.files = e.dataTransfer.files;
-        // Opsiyonel: Kullanıcıya kaç dosya seçtiğini gösteren bir alert veya metin eklenebilir
-        alert(`${e.dataTransfer.files.length} dosya seçildi. Şimdi 'Yüklemeyi Başlat'a basabilirsin.`);
-    }
-});
-
 
     </script>
 </body>
