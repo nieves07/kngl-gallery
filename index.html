@@ -97,13 +97,17 @@
         </div>
     </main>
 
-    <div id="image-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeModal()">
-        <button class="absolute top-6 right-6 text-white text-3xl">&times;</button>
-        <div class="max-w-5xl w-full max-h-[85vh] flex flex-col items-center" onclick="event.stopPropagation()">
-            <img id="modal-img" src="" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl">
-            <p id="modal-caption" class="text-gray-300 text-lg mt-4 font-medium tracking-wide"></p>
+   <div id="image-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeModal()">
+    <button class="absolute top-6 right-6 text-white text-3xl">&times;</button>
+    <div class="max-w-5xl w-full max-h-[85vh] flex flex-col items-center" onclick="event.stopPropagation()">
+        <img id="modal-img" src="" class="max-w-full max-h-[65vh] object-contain rounded-lg shadow-2xl">
+        
+        <div id="caption-container" class="w-full max-w-lg mt-4 flex items-center space-x-2">
+            <input type="text" id="modal-caption-input" class="w-full bg-gray-900 border border-purple-900/50 rounded-xl px-4 py-2 text-center text-gray-300 focus:outline-none focus:border-purple-500">
+            <button id="save-caption-btn" class="bg-purple-600 hover:bg-purple-500 px-4 py-2 rounded-xl text-white font-bold hidden" onclick="saveCaption()">Kaydet</button>
         </div>
     </div>
+</div>
 
     <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeAdminModal()">
         <div class="max-w-md w-full bg-gray-950 border border-purple-950 p-8 rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
@@ -225,12 +229,13 @@
                 const card = document.createElement('div');
                 card.className = "gallery-card relative bg-gray-950/40 border border-purple-950/60 rounded-xl overflow-hidden cursor-pointer neon-border hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1";
                 
-                card.addEventListener('click', (e) => {
-                    // Eğer checkbox veya silme butonuna tıklanmadıysa resmi büyüt
-                    if (!e.target.closest('.delete-btn') && !e.target.closest('.select-checkbox')) {
-                        openModal(img.url, img.caption || "");
-                    }
-                });
+                // renderPage fonksiyonu içindeki şu satırı bul:
+card.addEventListener('click', (e) => {
+    if (!e.target.closest('.delete-btn') && !e.target.closest('.select-checkbox')) {
+        // İD'yi de gönderiyoruz!
+        openModal(img.url, img.caption || "", img.id); 
+    }
+});
                 
                 card.innerHTML = `
                     ${isAdmin ? `
@@ -607,6 +612,65 @@
                 }, 500);
             }
         }
+// Resmi açarken modal'a id'yi de taşıyalım
+let currentEditingId = null;
+
+function openModal(url, caption, id) {
+    currentEditingId = id;
+    const imgEl = document.getElementById('modal-img');
+    const inputEl = document.getElementById('modal-caption-input');
+    const saveBtn = document.getElementById('save-caption-btn');
+    
+    imgEl.src = url;
+    inputEl.value = caption;
+    
+    // Adminse düzenleme kutusunu göster
+    if (sessionStorage.getItem('kngl_logged') === 'true') {
+        inputEl.disabled = false;
+        saveBtn.classList.remove('hidden');
+    } else {
+        inputEl.disabled = true;
+        saveBtn.classList.add('hidden');
+    }
+    
+    document.getElementById('image-modal').classList.remove('hidden');
+}
+
+// Güncelleme işlemi
+async function saveCaption() {
+    const newCaption = document.getElementById('modal-caption-input').value;
+    const btn = document.getElementById('save-caption-btn');
+    
+    btn.innerText = "Kaydediliyor...";
+    
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/gallery?id=eq.${currentEditingId}`, {
+            method: 'PATCH', // Güncelleme için PATCH kullanıyoruz
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ caption: newCaption })
+        });
+        
+        if (res.ok) {
+            alert("Açıklama başarıyla güncellendi!");
+            // Yerel veriyi güncelle
+            const img = allImages.find(i => i.id == currentEditingId);
+            if(img) img.caption = newCaption;
+            renderPage(); // Galeriyi yenile
+            closeModal();
+        } else {
+            alert("Güncelleme başarısız.");
+        }
+    } catch (e) {
+        alert("Bağlantı hatası.");
+    } finally {
+        btn.innerText = "Kaydet";
+    }
+}
+        
     </script>
 </body>
 </html>
