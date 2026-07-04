@@ -7,6 +7,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
+    /* Logonun yavaşça kaybolması için */
+    .fade-out {
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    /* İsteğe bağlı: Metin animasyonu */
+    .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+    }
         body {
             background-color: #0d0e12;
             background-image: radial-gradient(circle at 50% 0%, #1f1235 0%, #0d0e12 70%);
@@ -31,6 +45,15 @@
     </style>
 </head>
 <body class="text-gray-100 min-h-screen font-sans antialiased">
+
+    <div id="logo-preloader" class="fixed inset-0 bg-[#0d0e12] z-[100] flex items-center justify-center transition-opacity duration-700">
+    <div class="text-center animate-pulse">
+        <h1 class="text-5xl font-black text-white tracking-tighter">
+            KNGL<span class="text-purple-600">RP</span>
+        </h1>
+        <p class="text-gray-500 text-sm mt-2 tracking-widest uppercase">Premium Galeri</p>
+    </div>
+</div>
 
     <div id="admin-badge" class="bg-purple-900 text-purple-200 text-center text-xs py-1 hidden font-semibold tracking-wider">
         YÖNETİCİ MODU AKTİF • <button onclick="logout()" class="underline hover:text-white">Çıkış Yap</button>
@@ -732,6 +755,13 @@ function checkAdmin() {
         sessionStorage.setItem('kngl_logged', 'true');
     }
 }
+
+        window.addEventListener('load', () => {
+    const preloader = document.getElementById('logo-preloader');
+    setTimeout(() => {
+        preloader.classList.add('fade-out');
+    }, 2000); // 2000ms = 2 saniye bekle
+});
         
     </script>
 </body>
