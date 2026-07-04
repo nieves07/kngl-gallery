@@ -109,34 +109,57 @@
     </div>
 </div>
     
-    <div id="admin-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-gray-900 border border-purple-900/50 p-6 rounded-2xl w-full max-w-md">
-        
-        <div id="login-section">
-            <h2 class="text-xl font-bold text-white mb-4">Yönetici Girişi</h2>
-            <input type="password" id="admin-pass" class="w-full bg-black/50 border border-purple-900/50 rounded-xl px-4 py-3 text-white mb-4" placeholder="Şifre">
-            <button onclick="checkAdmin()" class="w-full bg-purple-600 py-3 rounded-xl font-bold">Giriş Yap</button>
-        </div>
-
-        <div id="upload-section" class="hidden">
-            <h2 class="text-xl font-bold text-white mb-4">Görsel Yükle</h2>
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeAdminModal()">
+        <div class="max-w-md w-full bg-gray-950 border border-purple-950 p-8 rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
             
-            <div id="drop-zone" class="border-2 border-dashed border-purple-500/50 rounded-xl p-8 text-center cursor-pointer hover:bg-purple-900/20 transition-all mb-4">
-                <p class="text-gray-400 text-sm">Görselleri buraya sürükle veya <span class="text-purple-400 font-bold underline">tıkla</span></p>
-                <input type="file" id="img-file" accept="image/*" multiple class="hidden">
+            <div id="login-section">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Yönetici Girişi</h2>
+                </div>
+                <div class="space-y-4">
+                    <input type="password" id="admin-password" placeholder="Erişim Şifresi" class="w-full bg-gray-900 border border-gray-800 focus:border-purple-500 rounded-xl px-4 py-3 text-white focus:outline-none">
+                    <button onclick="checkPassword()" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl">Giriş Yap</button>
+                    <p id="login-error" class="text-red-500 text-xs text-center hidden">Hatalı şifre girdiniz!</p>
+                </div>
+            </div>
+<div id="drop-zone" class="border-2 border-dashed border-purple-500/50 rounded-xl p-8 text-center cursor-pointer hover:bg-purple-900/20 transition-all mb-4">
+    <p class="text-gray-400 text-sm">Görselleri buraya sürükle veya <span class="text-purple-400 font-bold underline">buraya tıkla</span></p>
+    
+    <input type="file" id="img-file" accept="image/*" multiple class="hidden">
+</div>
+            <div id="preview-container" class="grid grid-cols-3 gap-2 mt-4 mb-4">
+    </div>
+            <div id="upload-section" class="hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-white">Toplu Fotoğraf Ekle</h2>
+                </div>
+                <div class="space-y-5">
+                    <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-800">
+                        <button onclick="switchUploadMethod('file')" id="btn-method-file" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white">Çoklu Dosya Yükle</button>
+                        <button onclick="switchUploadMethod('url')" id="btn-method-url" class="flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400">Çoklu URL Yapıştır</button>
+                    </div>
+
+                    <div id="input-file-container" class="space-y-2">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase">Görselleri Seç (Birden fazla seçebilirsiniz)</label>
+                        <input type="file" id="img-file" accept="image/*" multiple class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-400">
+                    </div>
+
+                    <div id="input-url-container" class="space-y-2 hidden">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase">Resim URL Adresleri (Her satıra bir link gelecek şekilde)</label>
+                        <textarea id="img-url" rows="4" placeholder="https://link1.com&#10;https://link2.com" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm font-mono"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Ortak Açıklama (İsteğe Bağlı)</label>
+                        <input type="text" id="img-caption" placeholder="Tüm bu görseller için ortak açıklama" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
+                    </div>
+
+                    <button onclick="submitBatchImages()" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl shadow-lg">Yüklemeyi Başlat</button>
+                </div>
             </div>
 
-            <div id="preview-container" class="grid grid-cols-3 gap-2 mb-4"></div>
-
-            <input type="text" id="img-caption" placeholder="Açıklama (opsiyonel)..." class="w-full bg-black/50 border border-purple-900/50 rounded-xl px-4 py-3 text-white mb-4">
-            
-            <div class="flex gap-2">
-                <button onclick="closeAdminModal()" class="flex-1 bg-gray-800 py-3 rounded-xl">İptal</button>
-                <button onclick="submitBatchImages()" class="flex-1 bg-purple-600 py-3 rounded-xl font-bold">Yükle</button>
-            </div>
         </div>
     </div>
-</div>
 
     <script>
         const PASSPHRASE = "nieves1312"; 
@@ -656,9 +679,42 @@ async function saveCaption() {
     }
 }
 
-        // --- SÜRÜKLE BIRAK MANTIĞI ---
+      // --- SÜRÜKLE BIRAK MANTIĞI ---
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('img-file');
+
+dropZone.onclick = () => fileInput.click();
+dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-purple-300'); };
+dropZone.ondragleave = () => dropZone.classList.remove('border-purple-300');
+dropZone.ondrop = (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-purple-300');
+    fileInput.files = e.dataTransfer.files; // Dosyaları aktar
+    alert("Dosya eklendi!");
+};
+
+// --- YÜKLEME BUTONU ---
+async function submitContent() {
+    const caption = document.getElementById('img-caption').value;
+    const directUrl = document.getElementById('img-url').value;
+    const files = fileInput.files;
+
+    if (directUrl) {
+        // Link olarak ekleme işlemi
+        await saveToSupabase(directUrl, caption);
+    } else if (files.length > 0) {
+        // Dosya olarak ekleme işlemi (Önce ImgBB, sonra Supabase)
+        await uploadFilesAndSave(files, caption);
+    }
+}
+
+// --- GİRİŞ KONTROLÜ ---
+function checkAdmin() {
+    if (document.getElementById('admin-pass').value === "SIFREN") {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('upload-section').classList.remove('hidden');
+    }
+}
 
 dropZone.addEventListener('click', () => fileInput.click());
 
@@ -699,59 +755,14 @@ function showPreviews(files) {
     });
 }
 
-let selectedFiles = [];
-const dropZone = document.getElementById('drop-zone');
-const fileInput = document.getElementById('img-file');
-const previewContainer = document.getElementById('preview-container');
-
-// Tıklama ile dosya seçiciyi aç
-dropZone.onclick = () => fileInput.click();
-
-// Sürükle-Bırak Olayları
-dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-purple-300'); };
-dropZone.ondragleave = () => dropZone.classList.remove('border-purple-300');
-dropZone.ondrop = (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('border-purple-300');
-    handleFiles(e.dataTransfer.files);
-};
-
-// Dosya seçildiğinde (normal file input)
-fileInput.onchange = (e) => handleFiles(e.target.files);
-
-function handleFiles(files) {
-    selectedFiles = [...selectedFiles, ...Array.from(files)];
-    renderPreviews();
-}
-
-function renderPreviews() {
-    previewContainer.innerHTML = '';
-    selectedFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const div = document.createElement('div');
-            div.className = "relative aspect-square rounded-lg overflow-hidden border border-purple-500/30";
-            div.innerHTML = `
-                <img src="${e.target.result}" class="w-full h-full object-cover">
-                <button onclick="removeFile(${index})" class="absolute top-0 right-0 bg-red-600 text-white text-[10px] w-5 h-5">X</button>
-            `;
-            previewContainer.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function removeFile(index) {
-    selectedFiles.splice(index, 1);
-    renderPreviews();
-}
-
-// Giriş başarılı olunca ekran değiştir
+// --- GİRİŞ YAPILDIĞINDA EKRANI DEĞİŞTİRME ---
+// Mevcut checkAdmin fonksiyonunun içine şu iki satırı ekle:
 function checkAdmin() {
-    // ... şifre kontrolün ...
+    // ... şifre kontrol kodların ...
     if (sifreDogru) {
         document.getElementById('login-section').classList.add('hidden');
         document.getElementById('upload-section').classList.remove('hidden');
+        sessionStorage.setItem('kngl_logged', 'true');
     }
 }
         
