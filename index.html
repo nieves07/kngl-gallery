@@ -755,12 +755,20 @@ function checkAdmin() {
         sessionStorage.setItem('kngl_logged', 'true');
     }
 }
+/ Sayfa yüklenmeye başlar başlamaz scroll'u kapat
+document.body.classList.add('loading');
 
-        window.addEventListener('load', () => {
+window.addEventListener('load', () => {
     const preloader = document.getElementById('logo-preloader');
+    
     setTimeout(() => {
         preloader.classList.add('fade-out');
-    }, 2000); // 2000ms = 2 saniye bekle
+        // Animasyon bitince body'den loading sınıfını kaldır
+        setTimeout(() => {
+            document.body.classList.remove('loading');
+            preloader.style.display = 'none'; // Tamamen kaldır
+        }, 700); // CSS geçiş süresi ile uyumlu
+    }, 2000);
 });
         
     </script>
