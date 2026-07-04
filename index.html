@@ -113,9 +113,10 @@
 
     <script>
         const PASSPHRASE = "KNGL123"; 
-        const IMGBB_KEY = "c8dfb2a19ff29df99b1d62c90bc50486";
         
-        // 🌍 Herkesin ortak görebileceği bulut veri anahtarı (Engellenmez, kilitlenmez)
+        // 🔑 1. ADIMDA ALDIĞIN KENDİ API ANAHTARINI AŞAĞIDAKİ TIRNAKLARIN İÇİNE YAPIŞTIR!
+        const IMGBB_KEY = "31355528081f87941242bc8c1a4a433d";
+        
         const BIN_URL = "https://api.jsonbin.io/v3/b/663d2bafe41b4d34e4f1659f";
 
         let localImages = [];
@@ -123,7 +124,6 @@
 
         document.addEventListener("DOMContentLoaded", loadGallery);
 
-        // --- GLOBAL ORTAK VERİLERİ YÜKLEME ---
         async function loadGallery() {
             const loadingEl = document.getElementById('loading');
             const galleryEl = document.getElementById('gallery');
@@ -131,7 +131,6 @@
             const isAdmin = sessionStorage.getItem('kngl_logged') === 'true';
 
             try {
-                // Herkes için tek bir merkezden veriyi çekiyoruz
                 const res = await fetch(`${BIN_URL}/latest`, {
                     headers: { "X-Master-Key": "$2a$10$WpMhK7P8lU1hKzS3GOnYkeZ6P7.tFpBqJ7aKxXFz1p6D1yvH5pS1i" }
                 });
@@ -199,7 +198,7 @@
                 galleryEl.classList.remove('hidden');
             } catch (error) {
                 console.error(error);
-                loadingEl.innerHTML = `<p class="text-red-400 text-sm p-4 bg-red-950/20 border border-red-900/50 rounded-xl">Galeri yüklenirken bir ağ bağlantı sorunu oluştu.</p>`;
+                loadingEl.innerHTML = `<p class="text-red-400 text-sm p-4 bg-red-950/20 border border-red-900/50 rounded-xl">Galeri yüklenirken bir senkronizasyon sorunu oluştu.</p>`;
             }
             
             if(isAdmin) {
@@ -207,7 +206,6 @@
             }
         }
 
-        // --- ORTAK BULUTTAN RESİM SİLME ---
         async function deleteImage(index) {
             if (!confirm("Bu fotoğrafı galeriden kalıcı olarak silmek istediğinize emin misiniz?")) return;
             
@@ -305,7 +303,6 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-        // --- RESİM EKLEME VE ORTAK BULUTA GÖNDERME ---
         async function submitImage() {
             const fileInput = document.getElementById('img-file');
             const urlInput = document.getElementById('img-url');
@@ -352,7 +349,6 @@
                 const newImg = { url: finalUrl, caption: caption, date: Date.now() };
                 localImages.unshift(newImg);
                 
-                // Güncel listeyi herkesin erişebileceği ortak buluta yazıyoruz
                 await fetch(BIN_URL, {
                     method: 'PUT',
                     headers: {
@@ -371,7 +367,7 @@
 
             } catch (error) {
                 console.error(error);
-                alert("Bulut senkronizasyonu sırasında hata oluştu.");
+                alert("Yükleme başarısız oldu. Lütfen koddaki IMGBB_KEY alanına kendi anahtarınızı doğru girdiğinizden emin olun.");
             } finally {
                 resetButton();
             }
