@@ -6,7 +6,7 @@
     <title>KNGL RP | Gallery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <style>
+    <style>
     /* Kaydırma barını tamamen yok etmek için */
     html, body {
         margin: 0;
@@ -38,9 +38,28 @@
         opacity: 0;
         pointer-events: none;
     }
-</style>
-          }
+        body {
+            background-color: #0d0e12;
+            background-image: radial-gradient(circle at 50% 0%, #1f1235 0%, #0d0e12 70%);
         }
+        .neon-border { box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
+        .gallery-card img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .gallery-card:hover img { transform: scale(1.05); }
+        .progress-glow { box-shadow: 0 0 10px rgba(168, 85, 247, 0.6); }
+        
+        /* 🌌 Zarif Sayfa Geçiş Efekti */
+        .page-transition {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.5s forwards cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body class="text-gray-100 min-h-screen font-sans antialiased">
 
@@ -50,10 +69,7 @@
         <div class="h-1 w-24 bg-purple-600 mx-auto mt-4 rounded-full shadow-[0_0_15px_#9333ea]"></div>
     </div>
 </div>
-
-
     
-
     <div id="admin-badge" class="bg-purple-900 text-purple-200 text-center text-xs py-1 hidden font-semibold tracking-wider">
         YÖNETİCİ MODU AKTİF • <button onclick="logout()" class="underline hover:text-white">Çıkış Yap</button>
     </div>
@@ -755,7 +771,7 @@ function checkAdmin() {
     }
 }
 
-        window.addEventListener('load', () => {
+window.addEventListener('load', () => {
     const preloader = document.getElementById('logo-preloader');
     
     setTimeout(() => {
