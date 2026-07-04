@@ -171,23 +171,6 @@
         </div>
     </div>
 </div>
-
-<div class="max-w-md mx-auto my-10 p-6 bg-[#0d0e12] border border-purple-900/50 rounded-2xl shadow-2xl">
-    <div class="flex justify-between items-center">
-        <div>
-            <h2 class="text-white font-bold text-xl">KNGL RP Durumu</h2>
-            <p id="server-status" class="text-gray-400 text-sm">Sunucu verileri yükleniyor...</p>
-        </div>
-        <div class="text-right">
-            <p class="text-gray-400 text-xs uppercase font-bold">Aktiflik</p>
-            <span id="player-count" class="text-purple-500 font-black text-2xl">--</span>
-        </div>
-    </div>
-    <div class="mt-4 w-full h-1 bg-gray-800 rounded-full overflow-hidden">
-        <div id="player-bar" class="h-full bg-purple-600 transition-all duration-1000" style="width: 0%"></div>
-    </div>
-</div>
-    
     
     <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeAdminModal()">
         <div class="max-w-md w-full bg-gray-950 border border-purple-950 p-8 rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
@@ -826,44 +809,7 @@ window.addEventListener('load', () => {
             preloader.style.display = 'none';
         }, 800); 
     }, 2000); // 2.5 saniye göster
-});
-// Sayfa yüklendiğinde bir kez çalıştır
-checkServerStatus();
 
-// Her 10 saniyede bir (10000 ms) yenile
-setInterval(checkServerStatus, 11000);
-
-async function checkServerStatus() {
-    const serverId = "5oy4vxd"; // FiveM ID'n
-    const statusEl = document.getElementById('server-status');
-    const countEl = document.getElementById('player-count');
-    const barEl = document.getElementById('player-bar');
-
-    // Proxy kullanarak CORS engelini aş
-    const proxyUrl = "https://corsproxy.io/?";
-    const targetUrl = `https://servers-frontend.fivem.net/api/servers/single/${serverId}`;
-
-    try {
-        const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
-        const data = await res.json();
-        
-        const players = data.Data.players.length;
-        const max = data.Data.sv_maxclients;
-        
-        // Başarılı durumu güncelle
-        statusEl.innerText = "Sunucu Aktif (Online)";
-        statusEl.className = "text-green-500 text-sm";
-        countEl.innerText = `${players} / ${max}`;
-        barEl.style.width = `${(players / max) * 100}%`;
-        
-    } catch (e) {
-        // Hata durumunda (Offline)
-        statusEl.innerText = "Sunucu Bakımda (Offline)";
-        statusEl.className = "text-red-500 text-sm";
-        countEl.innerText = "0";
-        barEl.style.width = "0%";
-    }
-}
     </script>
 </body>
 </html>
