@@ -14,6 +14,7 @@
         .neon-border { box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
         .gallery-card img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .gallery-card:hover img { transform: scale(1.05); }
+        .progress-glow { box-shadow: 0 0 10px rgba(168, 85, 247, 0.6); }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen font-sans antialiased">
@@ -36,6 +37,19 @@
                 Resim Yükle
             </button>
         </div>
+
+        <!-- ⚡ SİTE ÜSTÜ CANLI İLERLEME BARI (GLOBAL PROGRESS BAR) -->
+        <div id="global-upload-container" class="w-full bg-gray-950/80 border-b border-purple-950/50 hidden animate__animated animate__fadeInDown">
+            <div class="max-w-7xl mx-auto px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div class="flex items-center space-x-3">
+                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-purple-500 border-t-transparent"></div>
+                    <span id="global-progress-text" class="text-xs font-semibold text-purple-300 tracking-wide uppercase">Görseller yükleniyor: 0 / 0</span>
+                </div>
+                <div class="w-full sm:w-64 bg-gray-900 h-2 rounded-full overflow-hidden border border-purple-950/40">
+                    <div id="global-progress-bar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-full w-0 transition-all duration-300 progress-glow"></div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-12">
@@ -50,6 +64,7 @@
 
         <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hidden"></div>
 
+        <!-- 📄 SAYFALAMA ALANI -->
         <div id="pagination-container" class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-16 hidden">
             <button id="prev-btn" onclick="changePage(-1)" class="w-full sm:w-auto px-4 py-2 bg-gray-900 border border-purple-950/60 hover:border-purple-500/50 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:pointer-events-none">
                 ← Önceki
@@ -73,6 +88,7 @@
         </div>
     </div>
 
+    <!-- YÖNETİCİ MODALI -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeAdminModal()">
         <div class="max-w-md w-full bg-gray-950 border border-purple-950 p-8 rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
             
@@ -97,11 +113,13 @@
                         <button onclick="switchUploadMethod('url')" id="btn-method-url" class="flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400">Çoklu URL Yapıştır</button>
                     </div>
 
+                    <!-- 📁 ÇOKLU DOSYA SEÇİMİ -->
                     <div id="input-file-container" class="space-y-2">
                         <label class="block text-xs font-semibold text-gray-400 uppercase">Görselleri Seç (Birden fazla seçebilirsiniz)</label>
                         <input type="file" id="img-file" accept="image/*" multiple class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-400">
                     </div>
 
+                    <!-- 🔗 ÇOKLU URL GİRİŞİ -->
                     <div id="input-url-container" class="space-y-2 hidden">
                         <label class="block text-xs font-semibold text-gray-400 uppercase">Resim URL Adresleri (Her satıra bir link gelecek şekilde)</label>
                         <textarea id="img-url" rows="4" placeholder="https://link1.com&#10;https://link2.com" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm font-mono"></textarea>
@@ -110,14 +128,9 @@
                     <div>
                         <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Ortak Açıklama (İsteğe Bağlı)</label>
                         <input type="text" id="img-caption" placeholder="Tüm bu görseller için ortak açıklama" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
-                        <p class="text-gray-500 text-[10px] mt-1">Boş bırakırsanız sadece fotoğraflar yüklenir.</p>
                     </div>
 
-                    <div id="upload-progress" class="text-xs text-purple-400 font-semibold text-center hidden py-1 bg-purple-950/20 border border-purple-900/30 rounded-lg">
-                        Yükleniyor: <span id="progress-text">0 / 0</span>
-                    </div>
-
-                    <button onclick="submitBatchImages()" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl shadow-lg disabled:opacity-50">Galeriye Ekle</button>
+                    <button onclick="submitBatchImages()" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl shadow-lg">Yüklemeyi Başlat</button>
                 </div>
             </div>
 
@@ -125,7 +138,7 @@
     </div>
 
     <script>
-        const PASSPHRASE = "NİEVES1312"; 
+        const PASSPHRASE = "nieves1312"; 
         
         // 🔑 ANAHTARLARINI BURAYA YENİDEN YAZ:
         const SUPABASE_URL = "https://mmkusfynqosmvpsbwewc.supabase.co"; 
@@ -136,6 +149,7 @@
         let currentPage = 1;
         const itemsPerPage = 20; 
         let activeMethod = 'file';
+        let isUploading = false; // Çakışmaları önlemek için durum kontrolü
 
         document.addEventListener("DOMContentLoaded", fetchGalleryData);
 
@@ -156,7 +170,6 @@
                 if (res.ok) {
                     allImages = await res.json();
                 } else {
-                    console.error("Veri çekme hatası:", await res.text());
                     allImages = [];
                 }
 
@@ -172,7 +185,6 @@
                 noImagesEl.classList.add('hidden');
                 renderPage();
             } catch (error) {
-                console.error("Ağ Hatası:", error);
                 loadingEl.innerHTML = `<p class="text-red-400 text-sm p-4 bg-red-950/20 border border-red-900/50 rounded-xl">Bağlantı kurulamadı.</p>`;
             }
         }
@@ -190,7 +202,7 @@
             pageItems.forEach((img) => {
                 if(!img || !img.url) return;
                 const card = document.createElement('div');
-                card.className = "gallery-card relative bg-gray-950/40 border border-purple-950/60 rounded-xl overflow-hidden cursor-pointer neon-border hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1";
+                card.className = "gallery-card relative bg-gray-950/40 border border-purple-950/60 rounded-xl overflow-hidden cursor-pointer neon-border hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1 animate__animated animate__fadeIn";
                 
                 card.addEventListener('click', (e) => {
                     if (!e.target.closest('.delete-btn')) {
@@ -287,11 +299,9 @@
                         currentPage = totalPages;
                     }
                     renderPage();
-                } else {
-                    alert("Silme hatası: " + await res.text());
                 }
             } catch (error) {
-                alert("Silme sırasında bağlantı hatası oluştu.");
+                alert("Silme sırasında hata oluştu.");
             }
         }
 
@@ -315,6 +325,7 @@
         }
 
         function openAdminModal() {
+            if(isUploading) { alert("Şu an arka planda bir yükleme işlemi devam ediyor!"); return; }
             document.getElementById('admin-modal').classList.remove('hidden');
             if (sessionStorage.getItem('kngl_logged') === 'true') {
                 document.getElementById('login-section').classList.add('hidden');
@@ -351,64 +362,83 @@
         }
         function closeModal() { document.getElementById('image-modal').classList.add('hidden'); }
 
-        // 🔥 TOPLU RESİM YÜKLEME FONKSİYONU
+        // 🔥 MODAL DIŞINDA SİTE ÜSTÜNDE ÇALIŞAN TOPLU YÜKLEME FONKSİYONU
         async function submitBatchImages() {
             const fileInput = document.getElementById('img-file');
             const urlInput = document.getElementById('img-url');
             const captionInput = document.getElementById('img-caption');
-            const btn = document.getElementById('submit-btn');
-            const progressContainer = document.getElementById('upload-progress');
-            const progressText = document.getElementById('progress-text');
             const caption = captionInput.value.trim();
             
+            // Üst kısımdaki global yükleme elementleri
+            const globalContainer = document.getElementById('global-upload-container');
+            const globalProgressText = document.getElementById('global-progress-text');
+            const globalProgressBar = document.getElementById('global-progress-bar');
+            
             let urlsToUpload = [];
+            let totalCount = 0;
 
-            btn.disabled = true;
+            if (activeMethod === 'file') {
+                const files = fileInput.files;
+                if (files.length === 0) { alert("Lütfen en az bir dosya seçin!"); return; }
+                totalCount = files.length;
+                
+                // Modalı hemen kapatıyoruz, kullanıcı siteyi görebilsin
+                closeAdminModal();
+                isUploading = true;
 
-            try {
-                if (activeMethod === 'file') {
-                    const files = fileInput.files;
-                    if (files.length === 0) { alert("Lütfen en az bir dosya seçin!"); resetButton(); return; }
+                // Üstteki barı görünür yapalım
+                globalContainer.classList.remove('hidden');
+                globalProgressText.innerText = `Görseller ImgBB'ye aktarılıyor: 0 / ${totalCount}`;
+                globalProgressBar.style.width = `0%`;
 
-                    progressContainer.classList.remove('hidden');
-                    progressText.innerText = `0 / ${files.length} (Dosyalar sunucuya gönderiliyor...)`;
+                // Dosyaları sırayla yükle
+                for (let i = 0; i < files.length; i++) {
+                    const percent = Math.round((i / totalCount) * 80); // Yükleme aşamasını %80'e kadar getiriyoruz
+                    globalProgressBar.style.width = `${percent}%`;
+                    globalProgressText.innerText = `Görseller ImgBB'ye aktarılıyor: ${i + 1} / ${totalCount}`;
 
-                    // Dosyaları sırayla ImgBB'ye yükle
-                    for (let i = 0; i < files.length; i++) {
-                        progressText.innerText = `${i} / ${files.length} - Dosya yükleniyor...`;
-                        const formData = new FormData();
-                        formData.append("image", files[i]);
+                    const formData = new FormData();
+                    formData.append("image", files[i]);
 
+                    try {
                         const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
                             method: "POST",
                             body: formData
                         });
-
                         if (uploadRes.ok) {
                             const uploadData = await uploadRes.json();
-                            if (uploadData.success) {
-                                urlsToUpload.push(uploadData.data.url);
-                            }
+                            if (uploadData.success) urlsToUpload.push(uploadData.data.url);
                         }
+                    } catch (e) {
+                        console.error("Dosya yükleme hatası:", e);
                     }
-                } else {
-                    // Textarea'daki linkleri satır satır böl, temizle ve boş olanları ele
-                    const rawLinks = urlInput.value.split('\n');
-                    urlsToUpload = rawLinks.map(link => link.trim()).filter(link => link.startsWith('http'));
-                    if (urlsToUpload.length === 0) { alert("Lütfen geçerli URL adresleri girin!"); resetButton(); return; }
                 }
+            } else {
+                const rawLinks = urlInput.value.split('\n');
+                urlsToUpload = rawLinks.map(link => link.trim()).filter(link => link.startsWith('http'));
+                if (urlsToUpload.length === 0) { alert("Lütfen geçerli URL adresleri girin!"); return; }
+                totalCount = urlsToUpload.length;
 
-                if(urlsToUpload.length === 0) {
-                    alert("Yüklenecek görsel bulunamadı veya sunucu hatası oluştu.");
-                    resetButton();
-                    return;
-                }
+                closeAdminModal();
+                isUploading = true;
 
-                progressText.innerText = `Veritabanına kaydediliyor...`;
+                globalContainer.classList.remove('hidden');
+                globalProgressBar.style.width = `40%`;
+                globalProgressText.innerText = `Linkler hazırlanıyor...`;
+            }
 
-                // Supabase'e toplu (bulk) ekleme işlemi yapıyoruz (Tek istekte tüm listeyi yazar)
+            if(urlsToUpload.length === 0) {
+                alert("Yüklenecek görsel bulunamadı veya aktarım başarısız oldu.");
+                hideGlobalProgress();
+                return;
+            }
+
+            // Veritabanı aşaması (%85)
+            globalProgressBar.style.width = `85%`;
+            globalProgressText.innerText = `Veriler Los Santos veri merkezine yazılıyor...`;
+
+            try {
                 const payload = urlsToUpload.map(url => ({ url: url, caption: caption }));
-
                 const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/gallery`, {
                     method: 'POST',
                     headers: {
@@ -420,34 +450,40 @@
                     body: JSON.stringify(payload)
                 });
 
-                if(!dbRes.ok) {
-                    alert("Görseller yüklendi ancak veritabanına kaydedilirken hata oluştu.");
-                    resetButton();
-                    return;
+                if(dbRes.ok) {
+                    // Tamamlandı aşaması (%100)
+                    globalProgressBar.style.width = `100%`;
+                    globalProgressText.innerText = `Yükleme Tamamlandı! Galeri güncelleniyor...`;
+
+                    const newImgs = await dbRes.json();
+                    allImages = [...newImgs, ...allImages];
+                    currentPage = 1;
+                    
+                    // Form elemanlarını temizle
+                    fileInput.value = ''; urlInput.value = ''; captionInput.value = '';
+                    
+                    // Galeriyi yenile
+                    setTimeout(() => {
+                        renderPage();
+                        hideGlobalProgress();
+                    }, 1200);
+                } else {
+                    alert("Görseller yüklendi ancak veritabanı kaydı başarısız oldu.");
+                    hideGlobalProgress();
                 }
-
-                // Inputları temizle
-                fileInput.value = ''; urlInput.value = ''; captionInput.value = '';
-                closeAdminModal();
-                
-                // Yeni eklenen tüm resimleri listenin en başına koy ve 1. sayfayı yenile
-                const newImgs = await dbRes.json();
-                allImages = [...newImgs, ...allImages];
-                currentPage = 1;
-                renderPage();
-                
-                alert(`${urlsToUpload.length} adet görsel başarıyla galeriye eklendi!`);
-
             } catch (error) {
-                alert("Toplu yükleme sırasında hata oluştu: " + error.message);
-            } finally {
-                resetButton();
+                alert("Sistem hatası oluştu.");
+                hideGlobalProgress();
             }
 
-            function resetButton() { 
-                btn.disabled = false; 
-                btn.innerText = "Galeriye Ekle"; 
-                progressContainer.classList.add('hidden');
+            function hideGlobalProgress() {
+                isUploading = false;
+                globalContainer.classList.add('animate__fadeOutUp');
+                setTimeout(() => {
+                    globalContainer.classList.add('hidden');
+                    globalContainer.classList.remove('animate__fadeOutUp');
+                    globalProgressBar.style.width = `0%`;
+                }, 500);
             }
         }
     </script>
