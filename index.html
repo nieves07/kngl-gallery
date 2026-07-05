@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
@@ -57,10 +57,12 @@
         .select-checkbox { position: absolute; top: 10px; left: 10px; width: 20px; height: 20px; cursor: pointer; z-index: 10; accent-color: var(--accent-color); display: none; }
         .item-details { padding: 15px; }
         .item-desc { font-size: 0.9rem; color: #fff; word-wrap: break-word; margin-bottom: 10px; min-height: 24px; }
+        .item-desc-input { width: 100%; display: none; margin-bottom: 10px; }
         .item-date { font-size: 0.75rem; color: var(--text-muted); }
-        .item-actions { display: flex; justify-content: flex-end; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; }
+        .item-actions { display: flex; justify-content: flex-end; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; gap: 10px; }
         .btn-icon { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; }
         .btn-icon:hover { color: #d32f2f; }
+        .btn-icon.edit-btn:hover { color: #ffb300; }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .modal.active { opacity: 1; pointer-events: auto; }
@@ -126,43 +128,52 @@
 
     <script>
         // !!! KENDİ SUPABASE BİLGİLERİNİ BURAYA YAPIŞTIR !!!
-        const SUPABASE_URL = "https://mmkusfynqosmvpsbwewc.supabase.co";
+        const SUPABASE_URL = "https://mmkusfynqosmvpsbwewc.supabase.co/rest/v1/";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ta3VzZnlucW9zbXZwc2J3ZXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNzg0MzEsImV4cCI6MjA5ODc1NDQzMX0.pPtgFT_JdQaVqftGWTQxTUnulQ8WUNvrbdy5AG4jy-4";
         
-        const ADMIN_PASSWORD = "nieves 1312";
+        const ADMIN_PASSWORD = "nieves1312";
         
-        // Supabase İstemcisini Başlat
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+        let supabase;
         let isAdmin = false;
         let isBulkDeleteMode = false;
         let selectedItems = [];
         let tempBase64Image = "";
 
         window.onload = function() {
-            fetchGalleryFromDatabase();
+            // Supabase Kütüphanesinin Yüklenip Yüklenmediğini Kontrol Et
+            if (typeof supabase === 'undefined' && window.supabase) {
+                try {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    fetchGalleryFromDatabase();
+                } catch (err) {
+                    console.error("Supabase başlatma hatası:", err);
+                    document.getElementById('galleryGrid').innerHTML = `<div class="empty-message" style="color:red;">Supabase bağlantı bilgileri hatalı veya eksik!</div>`;
+                }
+            } else {
+                console.error("Supabase kütüphanesi yüklenemedi.");
+                document.getElementById('galleryGrid').innerHTML = `<div class="empty-message" style="color:red;">Kütüphane yükleme hatası! Sayfayı yenileyin.</div>`;
+            }
             setupDragAndDrop();
         };
 
-        // Veritabanından Görselleri Çekme
         async function fetchGalleryFromDatabase() {
             const grid = document.getElementById('galleryGrid');
             grid.innerHTML = `<div class="empty-message"><i class="fa-solid fa-spinner fa-spin"></i> Görseller Yükleniyor...</div>`;
 
-            let { data: gallery, error } = await supabase
-                .from('gallery')
-                .select('*')
-                .order('created_at', { ascending: false });
+            try {
+                let { data: gallery, error } = await supabase
+                    .from('gallery')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-            if (error) {
-                grid.innerHTML = `<div class="empty-message" style="color:red;">Veriler alınırken hata oluştu!</div>`;
-                return;
+                if (error) throw error;
+                renderGallery(gallery);
+            } catch (error) {
+                console.error("Veri çekme hatası:", error);
+                grid.innerHTML = `<div class="empty-message" style="color:red;">Veritabanından veriler alınamadı! (Tablo adını veya izinleri kontrol edin)</div>`;
             }
-
-            renderGallery(gallery);
         }
 
-        // Drag & Drop İşlemleri
         function setupDragAndDrop() {
             const dropZone = document.getElementById('dropZone');
             if(!dropZone) return;
@@ -173,7 +184,6 @@
 
         function handleFileSelect(e) { if(e.target.files.length) processFile(e.target.files[0]); }
 
-        // Dosyaları Sıkıştırarak Çözümleme (Büyük Fotoğrafların Yüklenme Hatalarını Engeller)
         function processFile(file) {
             if(!file.type.match('image.*')) { alert('Sadece görsel!'); return; }
             const reader = new FileReader();
@@ -181,7 +191,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1280; // Genişliği optimize et
+                    const MAX_WIDTH = 1280;
                     let width = img.width;
                     let height = img.height;
 
@@ -194,7 +204,6 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Kaliteyi %75 yaparak optimize Base64 çıktısı al
                     tempBase64Image = canvas.toDataURL('image/jpeg', 0.75);
                     document.getElementById('dropZone').innerHTML = `<i class="fa-solid fa-check" style="color: #4caf50;"></i><p>${file.name} Hazır!</p>`;
                 };
@@ -206,10 +215,8 @@
         function openLoginModal() { document.getElementById('loginModal').classList.add('active'); document.getElementById('passwordInput').focus(); }
         function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); document.getElementById('passwordInput').value = ""; }
 
-        // DÜZELTİLEN YÖNETİCİ GİRİŞ FONKSİYONU
         function verifyPassword() {
-            const enteredPassword = document.getElementById('passwordInput').value;
-            if(enteredPassword === ADMIN_PASSWORD) {
+            if(document.getElementById('passwordInput').value === ADMIN_PASSWORD) {
                 isAdmin = true; 
                 closeLoginModal();
                 document.getElementById('loginBtn').style.display = 'none';
@@ -231,7 +238,6 @@
             fetchGalleryFromDatabase();
         }
 
-        // Veritabanına Görsel Yükleme
         async function uploadImage() {
             const urlInput = document.getElementById('urlInput').value.trim();
             const descInput = document.getElementById('descInput').value.trim();
@@ -244,21 +250,23 @@
 
             const dateStr = new Date().toLocaleDateString('tr-TR', { hour: '2-digit', minute:'2-digit' });
 
-            const { error } = await supabase
-                .from('gallery')
-                .insert([{ src: finalSrc, description: descInput || "Açıklama belirtilmedi.", date_str: dateStr }]);
+            try {
+                const { error } = await supabase
+                    .from('gallery')
+                    .insert([{ src: finalSrc, description: descInput || "Açıklama belirtilmedi.", date_str: dateStr }]);
 
-            document.getElementById('uploadSubmitBtn').style.display = 'block';
-            document.getElementById('loadingSpinner').style.display = 'none';
+                if(error) throw error;
 
-            if(error) {
-                alert('Yükleme hatası: ' + error.message);
-            } else {
                 document.getElementById('urlInput').value = "";
                 document.getElementById('descInput').value = "";
                 tempBase64Image = "";
                 document.getElementById('dropZone').innerHTML = `<i class="fa-solid fa-images"></i><p>Görseli buraya sürükleyin veya <b>Göz Atın</b></p>`;
                 fetchGalleryFromDatabase();
+            } catch (error) {
+                alert('Yükleme hatası: ' + error.message);
+            } finally {
+                document.getElementById('uploadSubmitBtn').style.display = 'block';
+                document.getElementById('loadingSpinner').style.display = 'none';
             }
         }
 
@@ -280,10 +288,12 @@
                             <img src="${item.src}" onerror="this.src='https://placehold.co/600400/16161e/ffffff?text=Kırık+Link'">
                         </div>
                         <div class="item-details">
-                            <p class="item-desc">${item.description}</p>
+                            <p class="item-desc" id="desc-text-${item.id}">${item.description}</p>
+                            <input type="text" class="form-control item-desc-input" id="desc-input-${item.id}" value="${item.description}">
                             <span class="item-date"><i class="fa-regular fa-clock"></i> ${item.date_str || ''}</span>
                             ${isAdmin && !isBulkDeleteMode ? `
                                 <div class="item-actions">
+                                    <button class="btn-icon edit-btn" id="edit-btn-${item.id}" onclick="toggleEditDesc(${item.id})" title="Açıklamayı Düzenle"><i class="fa-solid fa-pen-to-square"></i></button>
                                     <button class="btn-icon" onclick="deleteSingleImage(${item.id})"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             ` : ''}
@@ -294,11 +304,47 @@
             });
         }
 
+        // Açıklama Düzenleme Fonksiyonu
+        async function toggleEditDesc(id) {
+            const textEl = document.getElementById(`desc-text-${id}`);
+            const inputEl = document.getElementById(`desc-input-${id}`);
+            const btnEl = document.getElementById(`edit-btn-${id}`);
+
+            if(inputEl.style.display === 'none' || inputEl.style.display === '') {
+                textEl.style.display = 'none';
+                inputEl.style.display = 'block';
+                inputEl.focus();
+                btnEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i>`;
+                btnEl.style.color = "#4caf50";
+            } else {
+                const newDesc = inputEl.value.trim();
+                try {
+                    const { error } = await supabase
+                        .from('gallery')
+                        .update({ description: newDesc || "Açıklama belirtilmedi." })
+                        .eq('id', id);
+
+                    if(error) throw error;
+                    textEl.innerText = newDesc || "Açıklama belirtilmedi.";
+                } catch(err) {
+                    alert("Güncellenemedi: " + err.message);
+                }
+                textEl.style.display = 'block';
+                inputEl.style.display = 'none';
+                btnEl.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
+                btnEl.style.color = "var(--text-muted)";
+            }
+        }
+
         async function deleteSingleImage(id) {
             if(confirm('Silmek istediğinize emin misiniz?')) {
-                const { error } = await supabase.from('gallery').delete().eq('id', id);
-                if(error) alert(error.message);
-                else fetchGalleryFromDatabase();
+                try {
+                    const { error } = await supabase.from('gallery').delete().eq('id', id);
+                    if(error) throw error;
+                    fetchGalleryFromDatabase();
+                } catch (error) {
+                    alert(error.message);
+                }
             }
         }
 
@@ -319,9 +365,14 @@
         async function deleteSelectedImages() {
             if(!selectedItems.length) return;
             if(confirm('Seçilenleri silmek istediğinize emin misiniz?')) {
-                const { error } = await supabase.from('gallery').delete().in('id', selectedItems);
-                if(error) alert(error.message);
-                else { toggleBulkSelectMode(false); fetchGalleryFromDatabase(); }
+                try {
+                    const { error } = await supabase.from('gallery').delete().in('id', selectedItems);
+                    if(error) throw error;
+                    toggleBulkSelectMode(false);
+                    fetchGalleryFromDatabase();
+                } catch (error) {
+                    alert(error.message);
+                }
             }
         }
     </script>
