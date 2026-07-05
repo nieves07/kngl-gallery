@@ -807,6 +807,17 @@ window.addEventListener('load', () => {
         }, 800); 
     }, 1500); // 2.5 saniye göster
 });
+
+
+// ... döngünün içindeki img kısmını şununla değiştir ...
+gallery.innerHTML += `
+    <div class="aspect-square rounded-lg overflow-hidden border border-purple-900/50 bg-gray-900">
+        <img src="${url}" 
+             onerror="this.src='https://via.placeholder.com/150?text=Hata'" 
+             class="w-full h-full object-cover hover:scale-110 transition-transform" 
+             loading="lazy">
+    </div>
+`;
         
     </script>
 </body>
