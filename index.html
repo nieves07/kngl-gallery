@@ -3,811 +3,612 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNGL RP | Gallery</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <title>KNGLRP | Resmi Galeri</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-    /* 1. Tüm sayfa yapısını kilitle ve scrollbar alanını sıfırla */
-    html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow-x: hidden; /* Yatay scroll'u tamamen kapat */
-        scrollbar-width: none !important; /* Firefox için */
-    }
+        :root {
+            --bg-color: #0f0f12;
+            --panel-color: #16161e;
+            --accent-color: #e50914;
+            --accent-hover: #b80710;
+            --text-color: #ffffff;
+            --text-muted: #a0a0b0;
+            --border-color: #282836;
+        }
 
-    /* 2. Chrome, Safari ve Edge için scrollbar'ı tamamen yok et */
-    ::-webkit-scrollbar {
-        width: 0px !important;
-        height: 0px !important;
-        display: none !important;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
 
-    /* 3. İçerik kutularında da scrollbar varsa onları da gizle */
-    * {
-        -ms-overflow-style: none !important; /* IE için */
-        scrollbar-width: none !important;
-    }
-    /* Kaydırma barını tamamen yok etmek için */
-    html, body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden; /* Animasyon süresince kaydırma barını kilitler */
-        height: 100%;
-    }
-
-    #logo-preloader {
-        position: fixed;
-        inset: 0;
-        background: radial-gradient(circle, #1a1a2e 0%, #0d0e12 100%); /* Premium derinlik */
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.8s ease;
-    }
-
-    /* Logo Büyütme ve Neon Etkisi */
-    .logo-container h1 {
-        font-size: 6rem; /* Çok daha büyük */
-        letter-spacing: -0.05em;
-        text-shadow: 0 0 20px rgba(168, 85, 247, 0.5); /* Mor parlama */
-        color: white;
-    }
-
-    .fade-out {
-        opacity: 0;
-        pointer-events: none;
-    }
         body {
-            background-color: #0d0e12;
-            background-image: radial-gradient(circle at 50% 0%, #1f1235 0%, #0d0e12 70%);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
         }
-        .neon-border { box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
-        .gallery-card img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .gallery-card:hover img { transform: scale(1.05); }
-        .progress-glow { box-shadow: 0 0 10px rgba(168, 85, 247, 0.6); }
-        
-        /* 🌌 Zarif Sayfa Geçiş Efekti */
-        .page-transition {
+
+        /* Header */
+        header {
+            background: linear-gradient(180deg, rgba(22,22,30,1) 0%, rgba(15,15,18,0) 100%);
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        header h1 span {
+            color: var(--accent-color);
+            text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Ana Konteyner */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Butonlar Grubu */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #282836;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #3b3b50;
+        }
+
+        .btn-danger {
+            background-color: #d32f2f;
+        }
+        .btn-danger:hover {
+            background-color: #b71c1c;
+        }
+
+        /* Yükleme Paneli (Admin) */
+        .admin-panel {
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: none; /* Şifre girilince açılacak */
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Drag & Drop Alanı */
+        .drop-zone {
+            border: 2px dashed var(--accent-color);
+            background-color: rgba(229, 9, 20, 0.03);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            background-color: rgba(229, 9, 20, 0.1);
+        }
+
+        .drop-zone i {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        /* Inputlar */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px;
+            border-radius: 5px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Galeri Izgarası (Grid) */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .gallery-item {
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            background-color: #000;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Seçim Checkbox'ı */
+        .select-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            z-index: 10;
+            accent-color: var(--accent-color);
+            display: none; /* Toplu silme modu açılınca görünecek */
+        }
+
+        .item-details {
+            padding: 15px;
+        }
+
+        .item-desc {
+            font-size: 0.9rem;
+            color: #fff;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+            min-height: 24px;
+        }
+
+        .item-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .item-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .btn-icon:hover {
+            color: #d32f2f;
+        }
+
+        /* Modal (Şifre Girişi) */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
             opacity: 0;
-            transform: translateY(10px);
-            animation: fadeInUp 0.5s forwards cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            transition: opacity 0.3s;
         }
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+        }
+
+        /* Bilgi Mesajı */
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            padding: 50px 0;
+            font-style: italic;
         }
     </style>
 </head>
-<body class="text-gray-100 min-h-screen font-sans antialiased">
+<body>
 
-<div id="logo-preloader">
-    <div class="logo-container text-center">
-        <h1 class="font-black">KNGL<span class="text-purple-500">RP</span></h1>
-        <div class="h-1 w-24 bg-purple-600 mx-auto mt-4 rounded-full shadow-[0_0_15px_#9333ea]"></div>
-    </div>
-</div>
-    
-    <div id="admin-badge" class="bg-purple-900 text-purple-200 text-center text-xs py-1 hidden font-semibold tracking-wider">
-        YÖNETİCİ MODU AKTİF • <button onclick="logout()" class="underline hover:text-white">Çıkış Yap</button>
-    </div>
-
-    <header class="border-b border-purple-900/40 bg-black/40 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <span class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500">
-                    KNGL RP
-                </span>
-                <span class="text-xs bg-purple-900/60 border border-purple-500/30 text-purple-300 px-2 py-0.5 rounded-full uppercase font-semibold tracking-widest">
-                    GALLERY
-                </span>
-            </div>
-            
-            <div class="flex items-center space-x-3">
-                <button id="bulk-delete-btn" onclick="executeBulkDelete()" class="text-sm bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-900/50 px-3 py-1.5 rounded-lg hidden transition-all">
-                    Seçilenleri Sil (<span id="select-count">0</span>)
-                </button>
-                <button id="action-btn" onclick="openAdminModal()" class="text-sm text-gray-400 hover:text-purple-400 transition-colors border border-gray-800 hover:border-purple-500/40 px-3 py-1.5 rounded-lg bg-gray-900/50">
-                    Resim Yükle
-                </button>
-            </div>
-        </div>
-
-        <div id="global-upload-container" class="w-full bg-gray-950/80 border-b border-purple-950/50 hidden animate__animated animate__fadeInDown">
-            <div class="max-w-7xl mx-auto px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div class="flex items-center space-x-3">
-                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-purple-500 border-t-transparent"></div>
-                    <span id="global-progress-text" class="text-xs font-semibold text-purple-300 tracking-wide uppercase">Görseller yükleniyor: 0 / 0</span>
-                </div>
-                <div class="w-full sm:w-64 bg-gray-900 h-2 rounded-full overflow-hidden border border-purple-950/40">
-                    <div id="global-progress-bar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-full w-0 transition-all duration-300 progress-glow"></div>
-                </div>
-            </div>
-        </div>
+    <header>
+        <h1><span>KNGL</span>RP</h1>
+        <p>Resmi Şehir Galerisi & Görsel Arşivi</p>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12">
-        <div class="text-center mb-16">
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">Şehir Günlükleri & Galeri</h1>
-            <p class="text-gray-400 max-w-xl mx-auto text-sm">KNGLRP sokaklarından en özel anlar ve unutulmaz anılar.</p>
-        </div>
-
-        <div id="loading" class="flex justify-center items-center py-20">
-            <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
-        </div>
-
-        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hidden"></div>
-
-        <div id="pagination-container" class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-16 hidden">
-            <button id="prev-btn" onclick="changePage(-1)" class="w-full sm:w-auto px-4 py-2 bg-gray-900 border border-purple-950/60 hover:border-purple-500/50 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:pointer-events-none">
-                ← Önceki
-            </button>
-            <div id="page-numbers" class="flex items-center space-x-2 overflow-x-auto max-w-full px-2 py-1"></div>
-            <button id="next-btn" onclick="changePage(1)" class="w-full sm:w-auto px-4 py-2 bg-gray-900 border border-purple-950/60 hover:border-purple-500/50 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:pointer-events-none">
-                Sonraki →
-            </button>
-        </div>
-
-        <div id="no-images" class="text-center py-20 hidden">
-            <p class="text-gray-500 text-lg">Henüz şehirden bir fotoğraf paylaşılmadı.</p>
-        </div>
-    </main>
-
-    <div id="image-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeModal()">
-    <button class="absolute top-6 right-6 text-white text-3xl">&times;</button>
-    <div class="max-w-5xl w-full max-h-[85vh] flex flex-col items-center" onclick="event.stopPropagation()">
-        <img id="modal-img" src="" class="max-w-full max-h-[65vh] object-contain rounded-lg shadow-2xl">
+    <div class="container">
         
-        <div id="caption-container" class="w-full max-w-lg mt-4 flex items-center space-x-2">
-            <input type="text" id="modal-caption-input" class="w-full bg-gray-900 border border-purple-900/50 rounded-xl px-4 py-2 text-center text-gray-300 focus:outline-none focus:border-purple-500">
-            <button id="save-caption-btn" class="bg-purple-600 hover:bg-purple-500 px-4 py-2 rounded-xl text-white font-bold hidden" onclick="saveCaption()">Kaydet</button>
-        </div>
-    </div>
-</div>
-    
-    <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeAdminModal()">
-        <div class="max-w-md w-full bg-gray-950 border border-purple-950 p-8 rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
+        <div class="action-bar">
+            <div>
+                <button class="btn" id="loginBtn" onclick="openLoginModal()">
+                    <i class="fa-solid fa-lock"></i> Yönetim Girişi
+                </button>
+                <button class="btn btn-secondary" id="logoutBtn" onclick="logoutAdmin()" style="display: none;">
+                    <i class="fa-solid fa-lock-open"></i> Çıkış Yap
+                </button>
+            </div>
             
-            <div id="login-section">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-white">Yönetici Girişi</h2>
-                </div>
-                <div class="space-y-4">
-                    <input type="password" id="admin-password" placeholder="Erişim Şifresi" class="w-full bg-gray-900 border border-gray-800 focus:border-purple-500 rounded-xl px-4 py-3 text-white focus:outline-none">
-                    <button onclick="checkPassword()" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl">Giriş Yap</button>
-                    <p id="login-error" class="text-red-500 text-xs text-center hidden">Hatalı şifre girdiniz!</p>
-                </div>
+            <div id="bulkDeleteActions" style="display: none;">
+                <button class="btn btn-secondary" onclick="toggleBulkSelectMode(false)">İptal</button>
+                <button class="btn btn-danger" onclick="deleteSelectedImages()">
+                    <i class="fa-solid fa-trash-can"></i> Seçilenleri Sil (<span id="selectCount">0</span>)
+                </button>
             </div>
-<div id="drop-zone" class="border-2 border-dashed border-purple-500/50 rounded-xl p-8 text-center cursor-pointer hover:bg-purple-900/20 transition-all mb-4">
-    <p class="text-gray-400 text-sm">Görselleri buraya sürükle veya <span class="text-purple-400 font-bold underline">buraya tıkla</span></p>
-    
-    <input type="file" id="img-file" accept="image/*" multiple class="hidden">
-</div>
-            <div id="preview-container" class="grid grid-cols-3 gap-2 mt-4 mb-4">
+
+            <button class="btn btn-danger" id="bulkDeleteModeBtn" onclick="toggleBulkSelectMode(true)" style="display: none;">
+                <i class="fa-solid fa-layer-group"></i> Toplu Silme Modu
+            </button>
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+            <div class="panel-title">
+                <span><i class="fa-solid fa-cloud-arrow-up"></i> Yeni Görsel Ekle</span>
+            </div>
+
+            <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <i class="fa-solid fa-images"></i>
+                <p>Görseli buraya sürükleyin veya <b>Göz Atın</b></p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+            </div>
+
+            <div class="input-group">
+                <label for="urlInput">Veya Görsel Linki (URL)</label>
+                <input type="text" id="urlInput" class="form-control" placeholder="https://example.com/resim.png">
+            </div>
+
+            <div class="input-group">
+                <label for="descInput">Görsel Açıklaması</label>
+                <input type="text" id="descInput" class="form-control" placeholder="Şehir meydanından bir kare, pd baskını vb...">
+            </div>
+
+            <button class="btn" onclick="uploadImage()" style="width: 100%; justify-content: center;">
+                <i class="fa-solid fa-plus"></i> Galeriyi Güncelle
+            </button>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid">
+            </div>
+
     </div>
-            <div id="upload-section" class="hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-white">Toplu Fotoğraf Ekle</h2>
-                </div>
-                <div class="space-y-5">
-                    <div class="flex bg-gray-900 p-1 rounded-xl border border-gray-800">
-                        <button onclick="switchUploadMethod('file')" id="btn-method-file" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white">Çoklu Dosya Yükle</button>
-                        <button onclick="switchUploadMethod('url')" id="btn-method-url" class="flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400">Çoklu URL Yapıştır</button>
-                    </div>
 
-                    <div id="input-file-container" class="space-y-2">
-                        <label class="block text-xs font-semibold text-gray-400 uppercase">Görselleri Seç (Birden fazla seçebilirsiniz)</label>
-                        <input type="file" id="img-file" accept="image/*" multiple class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-400">
-                    </div>
-
-                    <div id="input-url-container" class="space-y-2 hidden">
-                        <label class="block text-xs font-semibold text-gray-400 uppercase">Resim URL Adresleri (Her satıra bir link gelecek şekilde)</label>
-                        <textarea id="img-url" rows="4" placeholder="https://link1.com&#10;https://link2.com" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm font-mono"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Ortak Açıklama (İsteğe Bağlı)</label>
-                        <input type="text" id="img-caption" placeholder="Tüm bu görseller için ortak açıklama" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none text-sm">
-                    </div>
-
-                    <button onclick="submitBatchImages()" id="submit-btn" class="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 font-semibold text-white py-3 rounded-xl shadow-lg">Yüklemeyi Başlat</button>
-                </div>
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h3>Yönetici Girişi</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Görsel eklemek veya silmek için şifreyi girin.</p>
+            <div class="input-group">
+                <input type="password" id="passwordInput" class="form-control" placeholder="Şifre">
             </div>
-
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeLoginModal()" style="flex: 1; justify-content: center;">İptal</button>
+                <button class="btn" onclick="verifyPassword()" style="flex: 1; justify-content: center;">Giriş</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const PASSPHRASE = "nieves1312"; 
+        // Sabit Şifre
+        const ADMIN_PASSWORD = "nieves 1312";
         
-        // 🔑 ANAHTARLARINI BURAYA YENİDEN YAZ:
-        const SUPABASE_URL = "https://mmkusfynqosmvpsbwewc.supabase.co"; 
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ta3VzZnlucW9zbXZwc2J3ZXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNzg0MzEsImV4cCI6MjA5ODc1NDQzMX0.pPtgFT_JdQaVqftGWTQxTUnulQ8WUNvrbdy5AG4jy-4"; 
-        const IMGBB_KEY = "b465ee87375e9aabe31f96eeb810e227";
+        // State Yönetimi
+        let isAdmin = false;
+        let isBulkDeleteMode = false;
+        let selectedItems = [];
+        let galleryData = [];
+        let tempBase64Image = ""; // Yüklenen yerel dosya verisi
 
-        let allImages = [];
-        let selectedImageIds = []; // 🗑️ Toplu silinecek id'lerin dizisi
-        let currentPage = 1;
-        const itemsPerPage = 20; 
-        let activeMethod = 'file';
-        let isUploading = false; 
-
-        document.addEventListener("DOMContentLoaded", fetchGalleryData);
-
-        async function fetchGalleryData() {
-            const loadingEl = document.getElementById('loading');
-            const noImagesEl = document.getElementById('no-images');
-            const galleryEl = document.getElementById('gallery');
-            const paginationEl = document.getElementById('pagination-container');
-
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/gallery?select=*&order=created_at.desc`, {
-                    headers: {
-                        "apikey": SUPABASE_KEY,
-                        "Authorization": `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                
-                if (res.ok) {
-                    allImages = await res.json();
-                } else {
-                    allImages = [];
-                }
-
-                loadingEl.classList.add('hidden');
-
-                if (allImages.length === 0) {
-                    noImagesEl.classList.remove('hidden');
-                    galleryEl.classList.add('hidden');
-                    paginationEl.classList.add('hidden');
-                    return;
-                }
-
-                noImagesEl.classList.add('hidden');
-                renderPage();
-            } catch (error) {
-                loadingEl.innerHTML = `<p class="text-red-400 text-sm p-4 bg-red-950/20 border border-red-900/50 rounded-xl">Bağlantı kurulamadı.</p>`;
+        // Sayfa Yüklendiğinde Verileri Getir
+        window.onload = function() {
+            const storedData = localStorage.getItem('kngl_gallery');
+            if(storedData) {
+                galleryData = JSON.parse(storedData);
             }
-        }
+            renderGallery();
+            setupDragAndDrop();
+        };
 
-        function renderPage() {
-            const galleryEl = document.getElementById('gallery');
-            const isAdmin = sessionStorage.getItem('kngl_logged') === 'true';
+        // Drag & Drop Fonksiyonları
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('dropZone');
 
-            // Sayfa geçiş efekti için sınıfı sıfırlayıp yeniden tetikliyoruz
-            galleryEl.classList.remove('page-transition');
-            void galleryEl.offsetWidth; // DOM'u tetikle
-            galleryEl.classList.add('page-transition');
-
-            galleryEl.innerHTML = '';
-
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const pageItems = allImages.slice(startIndex, endIndex);
-
-            pageItems.forEach((img) => {
-                if(!img || !img.url) return;
-                const isChecked = selectedImageIds.includes(img.id.toString());
-                const card = document.createElement('div');
-                card.className = "gallery-card relative bg-gray-950/40 border border-purple-950/60 rounded-xl overflow-hidden cursor-pointer neon-border hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1";
-                
-                // renderPage fonksiyonu içindeki şu satırı bul:
-card.addEventListener('click', (e) => {
-    if (!e.target.closest('.delete-btn') && !e.target.closest('.select-checkbox')) {
-        // İD'yi de gönderiyoruz!
-        openModal(img.url, img.caption || "", img.id); 
-    }
-});
-               card.innerHTML = `
-    ${isAdmin ? `
-        <div class="absolute top-3 left-3 z-10 bg-black/60 p-1.5 rounded-lg border border-purple-500/40 backdrop-blur-sm flex items-center justify-center">
-            <input type="checkbox" data-id="${img.id}" class="select-checkbox h-4 w-4 accent-purple-600 cursor-pointer rounded">
-        </div>
-        <button data-id="${img.id}" class="delete-btn absolute top-3 right-3 z-10 bg-red-600/90 hover:bg-red-700 text-white p-2 rounded-lg border border-red-500 shadow-lg" title="Sil">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-        </button>
-    ` : ''}
-    <div class="aspect-video w-full overflow-hidden bg-gray-900 flex items-center justify-center">
-        <img src="${img.url}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a102f/ffffff?text=Resim+Yuklenemedi'">
-    </div>
-    
-    <div class="p-4 border-t border-purple-950/40 bg-black/20 ${(!img.caption || img.caption.trim() === "") ? 'h-0 p-0 overflow-hidden' : ''}">
-        <p class="text-sm text-gray-300 font-medium truncate">${img.caption || ""}</p>
-    </div>
-`;
-                galleryEl.appendChild(card);
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('drag-over');
+                }, false);
             });
 
-            if (isAdmin) {
-                // Tekli silme dinleyicileri
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const id = button.getAttribute('data-id');
-                        deleteImage(id);
-                    });
-                });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('drag-over');
+                }, false);
+            });
 
-                // Seçim kutusu dinleyicileri (Toplu Silme)
-                document.querySelectorAll('.select-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', (e) => {
-                        const id = checkbox.getAttribute('data-id');
-                        if (checkbox.checked) {
-                            if (!selectedImageIds.includes(id)) selectedImageIds.push(id);
-                        } else {
-                            selectedImageIds = selectedImageIds.filter(item => item !== id);
-                        }
-                        updateBulkDeleteButton();
-                    });
-                });
-
-                showAdminInterface();
-            }
-
-            galleryEl.classList.remove('hidden');
-            updatePaginationControls();
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if(files.length > 0) {
+                    processFile(files[0]);
+                }
+            });
         }
 
-        // 🗑️ Toplu Silme Butonunun Durumunu Güncelleme
-        function updateBulkDeleteButton() {
-            const bulkBtn = document.getElementById('bulk-delete-btn');
-            const countEl = document.getElementById('select-count');
-            countEl.innerText = selectedImageIds.length;
-            
-            if (selectedImageIds.length > 0) {
-                bulkBtn.classList.remove('hidden');
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if(files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+
+        function processFile(file) {
+            if(!file.type.match('image.*')) {
+                alert('Lütfen sadece görsel dosyası yükleyin!');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempBase64Image = e.target.result;
+                document.getElementById('dropZone').innerHTML = `<i class="fa-solid fa-check" style="color: #4caf50;"></i><p>${file.name} hazır!</p>`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Giriş / Çıkış Modalları
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('passwordInput').focus();
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('passwordInput').value = "";
+        }
+
+        function verifyPassword() {
+            const pass = document.getElementById('passwordInput').value;
+            if(pass === ADMIN_PASSWORD) {
+                isAdmin = true;
+                closeLoginModal();
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-flex';
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('bulkDeleteModeBtn').style.display = 'inline-flex';
+                renderGallery(); // Silme ikonlarını göstermek için tekrar render
             } else {
-                bulkBtn.classList.add('hidden');
+                alert('Hatalı Şifre! Erişim Reddedildi.');
             }
         }
 
-        // 🗑️ Toplu Silme Butonunun Durumunu Güncelleme (Hata Korumalı)
-        function updateBulkDeleteButton() {
-            const bulkBtn = document.getElementById('bulk-delete-btn');
-            const countEl = document.getElementById('select-count');
+        function logoutAdmin() {
+            isAdmin = false;
+            toggleBulkSelectMode(false);
+            document.getElementById('loginBtn').style.display = 'inline-flex';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('bulkDeleteModeBtn').style.display = 'none';
+            renderGallery();
+        }
+
+        // Görsel Ekleme Fonksiyonu
+        function uploadImage() {
+            const urlInput = document.getElementById('urlInput').value.trim();
+            const descInput = document.getElementById('descInput').value.trim();
             
-            if (bulkBtn) {
-                if (selectedImageIds.length > 0) {
-                    bulkBtn.classList.remove('hidden');
-                } else {
-                    bulkBtn.classList.add('hidden');
-                }
-                
-                // Eğer butonun içindeki sayaç elementi bulunduysa sayıyı yaz, yoksa direkt butona yaz
-                if (countEl) {
-                    countEl.innerText = selectedImageIds.length;
-                } else {
-                    bulkBtn.innerText = `Seçilenleri Sil (${selectedImageIds.length})`;
-                }
-            }
-        }
+            let finalSrc = "";
 
-        // 🛑 Toplu Silme İşlemini Çalıştıran Fonksiyon (Güvenli ve Paralel Versiyon)
-        async function executeBulkDelete() {
-            if (selectedImageIds.length === 0) return;
-            if (!confirm(`Seçtiğiniz ${selectedImageIds.length} adet fotoğrafı kalıcı olarak silmek istiyor musunuz?`)) return;
-
-            const bulkBtn = document.getElementById('bulk-delete-btn');
-            if (bulkBtn) {
-                bulkBtn.disabled = true;
-                bulkBtn.innerText = "Siliniyor...";
-            }
-
-            try {
-                const deletePromises = selectedImageIds.map(id => 
-                    fetch(`${SUPABASE_URL}/rest/v1/gallery?id=eq.${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            "apikey": SUPABASE_KEY,
-                            "Authorization": `Bearer ${SUPABASE_KEY}`
-                        }
-                    })
-                );
-
-                const responses = await Promise.all(deletePromises);
-                const allOk = responses.every(res => res.ok);
-
-                if (allOk) {
-                    allImages = allImages.filter(img => !selectedImageIds.includes(img.id.toString()));
-                    selectedImageIds = [];
-                    updateBulkDeleteButton();
-
-                    const totalPages = Math.ceil(allImages.length / itemsPerPage);
-                    if (currentPage > totalPages && currentPage > 1) {
-                        currentPage = totalPages;
-                    }
-                    renderPage();
-                    alert("Seçilen görseller başarıyla temizlendi.");
-                } else {
-                    alert("Bazı görseller silinirken hata oluştu. Lütfen sayfayı yenileyip tekrar deneyin.");
-                }
-            } catch (error) {
-                console.error("Toplu silme hatası:", error);
-                alert("Bağlantı hatası: " + error.message);
-            } finally {
-                // Hata veren kısım burasıydı, artık elementin varlığı kontrol ediliyor
-                const finalBulkBtn = document.getElementById('bulk-delete-btn');
-                if (finalBulkBtn) {
-                    finalBulkBtn.disabled = false;
-                    finalBulkBtn.innerHTML = `Seçilenleri Sil (<span id="select-count">${selectedImageIds.length}</span>)`;
-                }
-            }
-        }
-
-        function updatePaginationControls() {
-            const paginationEl = document.getElementById('pagination-container');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            const pageNumbersEl = document.getElementById('page-numbers');
-
-            const totalPages = Math.ceil(allImages.length / itemsPerPage);
-
-            if (totalPages <= 1) {
-                paginationEl.classList.add('hidden');
+            if(tempBase64Image) {
+                finalSrc = tempBase64Image;
+            } else if(urlInput) {
+                finalSrc = urlInput;
+            } else {
+                alert('Lütfen bir dosya sürükleyin veya görsel linki yapıştırın!');
                 return;
             }
 
-            paginationEl.classList.remove('hidden');
-            prevBtn.disabled = currentPage === 1;
-            nextBtn.disabled = currentPage === totalPages;
+            const newItem = {
+                id: Date.now(),
+                src: finalSrc,
+                description: descInput || "Açıklama belirtilmedi.",
+                date: new Date().toLocaleDateString('tr-TR', { hour: '2-digit', minute:'2-digit' })
+            };
 
-            pageNumbersEl.innerHTML = '';
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement('button');
-                btn.innerText = i;
-                if (i === currentPage) {
-                    btn.className = "px-3.5 py-1.5 bg-purple-600 border border-purple-500 text-white rounded-lg text-sm font-bold shadow-lg transition-all";
-                } else {
-                    btn.className = "px-3.5 py-1.5 bg-gray-950 border border-purple-950/60 text-gray-400 hover:text-purple-400 hover:border-purple-500/30 rounded-lg text-sm font-medium transition-all";
-                }
-                btn.onclick = () => {
-                    currentPage = i;
-                    renderPage();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                };
-                pageNumbersEl.appendChild(btn);
-            }
-        }
-
-        function changePage(direction) {
-            currentPage += direction;
-            renderPage();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        async function deleteImage(id) {
-            if (!confirm("Bu fotoğrafı kalıcı olarak silmek istiyor musunuz?")) return;
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/gallery?id=eq.${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        "apikey": SUPABASE_KEY,
-                        "Authorization": `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                if(res.ok) {
-                    allImages = allImages.filter(img => img.id != id);
-                    selectedImageIds = selectedImageIds.filter(item => item !== id.toString());
-                    updateBulkDeleteButton();
-                    
-                    const totalPages = Math.ceil(allImages.length / itemsPerPage);
-                    if (currentPage > totalPages && currentPage > 1) {
-                        currentPage = totalPages;
-                    }
-                    renderPage();
-                }
-            } catch (error) {
-                alert("Silme sırasında hata oluştu.");
-            }
-        }
-
-        function switchUploadMethod(method) {
-            activeMethod = method;
-            const btnFile = document.getElementById('btn-method-file');
-            const btnUrl = document.getElementById('btn-method-url');
-            const inputFile = document.getElementById('input-file-container');
-            const inputUrl = document.getElementById('input-url-container');
-            if(method === 'file') {
-                btnFile.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white";
-                btnUrl.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400";
-                inputFile.classList.remove('hidden');
-                inputUrl.classList.add('hidden');
-            } else {
-                btnUrl.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white";
-                btnFile.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400";
-                inputUrl.classList.remove('hidden');
-                inputFile.classList.add('hidden');
-            }
-        }
-
-        function openAdminModal() {
-            if(isUploading) { alert("Şu an arka planda bir yükleme işlemi devam ediyor!"); return; }
-            document.getElementById('admin-modal').classList.remove('hidden');
-            if (sessionStorage.getItem('kngl_logged') === 'true') {
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('upload-section').classList.remove('hidden');
-            } else {
-                document.getElementById('login-section').classList.remove('hidden');
-                document.getElementById('upload-section').classList.add('hidden');
-            }
-        }
-
-        function checkPassword() {
-            if (document.getElementById('admin-password').value === PASSPHRASE) {
-                sessionStorage.setItem('kngl_logged', 'true');
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('upload-section').classList.remove('hidden');
-                showAdminInterface();
-                renderPage();
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
-        }
-
-        function showAdminInterface() {
-            document.getElementById('admin-badge').classList.remove('hidden');
-            document.getElementById('action-btn').innerText = "Fotoğraf Ekle";
-            updateBulkDeleteButton();
-        }
-
-        function logout() { sessionStorage.removeItem('kngl_logged'); location.reload(); }
-        function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
-        function openModal(url, caption) {
-            document.getElementById('modal-img').src = url;
-            document.getElementById('modal-caption').innerText = caption;
-            document.getElementById('image-modal').classList.remove('hidden');
-        }
-        function closeModal() { document.getElementById('image-modal').classList.add('hidden'); }
-
-        async function submitBatchImages() {
-            const fileInput = document.getElementById('img-file');
-            const urlInput = document.getElementById('img-url');
-            const captionInput = document.getElementById('img-caption');
-            const caption = captionInput.value.trim();
+            galleryData.unshift(newItem);
+            localStorage.setItem('kngl_gallery', JSON.stringify(galleryData));
             
-            const globalContainer = document.getElementById('global-upload-container');
-            const globalProgressText = document.getElementById('global-progress-text');
-            const globalProgressBar = document.getElementById('global-progress-bar');
-            
-            let urlsToUpload = [];
-            let totalCount = 0;
+            // Formu Temizle
+            document.getElementById('urlInput').value = "";
+            document.getElementById('descInput').value = "";
+            tempBase64Image = "";
+            document.getElementById('dropZone').innerHTML = `<i class="fa-solid fa-images"></i><p>Görseli buraya sürükleyin veya <b>Göz Atın</b></p>`;
 
-            if (activeMethod === 'file') {
-                const files = fileInput.files;
-                if (files.length === 0) { alert("Lütfen en az bir dosya seçin!"); return; }
-                totalCount = files.length;
-                
-                closeAdminModal();
-                isUploading = true;
+            renderGallery();
+        }
 
-                globalContainer.classList.remove('hidden');
-                globalProgressText.innerText = `Görseller ImgBB'ye aktarılıyor: 0 / ${totalCount}`;
-                globalProgressBar.style.width = `0%`;
+        // Galeriyi Ekrana Basma
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = "";
 
-                for (let i = 0; i < files.length; i++) {
-                    const percent = Math.round((i / totalCount) * 80); 
-                    globalProgressBar.style.width = `${percent}%`;
-                    globalProgressText.innerText = `Görseller ImgBB'ye aktarılıyor: ${i + 1} / ${totalCount}`;
-
-                    const formData = new FormData();
-                    formData.append("image", files[i]);
-
-                    try {
-                        const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-                            method: "POST",
-                            body: formData
-                        });
-                        if (uploadRes.ok) {
-                            const uploadData = await uploadRes.json();
-                            if (uploadData.success) urlsToUpload.push(uploadData.data.url);
-                        }
-                    } catch (e) {
-                        console.error(e);
-                    }
-                }
-            } else {
-                const rawLinks = urlInput.value.split('\n');
-                urlsToUpload = rawLinks.map(link => link.trim()).filter(link => link.startsWith('http'));
-                if (urlsToUpload.length === 0) { alert("Lütfen geçerli URL adresleri girin!"); return; }
-                totalCount = urlsToUpload.length;
-
-                closeAdminModal();
-                isUploading = true;
-
-                globalContainer.classList.remove('hidden');
-                globalProgressBar.style.width = `40%`;
-                globalProgressText.innerText = `Linkler hazırlanıyor...`;
-            }
-
-            if(urlsToUpload.length === 0) {
-                alert("Yüklenecek görsel bulunamadı.");
-                hideGlobalProgress();
+            if(galleryData.length === 0) {
+                grid.innerHTML = `<div class="empty-message">Galeri henüz boş. Sunucudan görseller yüklenmesini bekleyin.</div>`;
                 return;
             }
 
-            globalProgressBar.style.width = `85%`;
-            globalProgressText.innerText = `Veriler Los Santos veri merkezine yazılıyor...`;
+            galleryData.forEach(item => {
+                const isChecked = selectedItems.includes(item.id);
 
-            try {
-                const payload = urlsToUpload.map(url => ({ url: url, caption: caption }));
-                const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/gallery`, {
-                    method: 'POST',
-                    headers: {
-                        "apikey": SUPABASE_KEY,
-                        "Authorization": `Bearer ${SUPABASE_KEY}`,
-                        "Content-Type": "application/json",
-                        "Prefer": "return=representation"
-                    },
-                    body: JSON.stringify(payload)
-                });
+                const itemHtml = `
+                    <div class="gallery-item" id="item-${item.id}">
+                        <input type="checkbox" class="select-checkbox" 
+                            style="display: ${isBulkDeleteMode ? 'block' : 'none'}" 
+                            ${isChecked ? 'checked' : ''} 
+                            onchange="handleSelectItem(${item.id})">
+                        
+                        <div class="image-container">
+                            <img src="${item.src}" alt="KNGLRP" onerror="this.src='https://placehold.co/600400/16161e/ffffff?text=Hatalı+Görsel+Linki'">
+                        </div>
+                        <div class="item-details">
+                            <p class="item-desc">${item.description}</p>
+                            <span class="item-date"><i class="fa-regular fa-clock"></i> ${item.date}</span>
+                            
+                            ${isAdmin && !isBulkDeleteMode ? `
+                                <div class="item-actions">
+                                    <button class="btn-icon" onclick="deleteSingleImage(${item.id})" title="Görseli Sil">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', itemHtml);
+            });
+        }
 
-                if(dbRes.ok) {
-                    globalProgressBar.style.width = `100%`;
-                    globalProgressText.innerText = `Yükleme Tamamlandı! Galeri güncelleniyor...`;
-
-                    const newImgs = await dbRes.json();
-                    allImages = [...newImgs, ...allImages];
-                    currentPage = 1;
-                    
-                    fileInput.value = ''; urlInput.value = ''; captionInput.value = '';
-                    
-                    setTimeout(() => {
-                        renderPage();
-                        hideGlobalProgress();
-                    }, 1200);
-                } else {
-                    alert("Veritabanı kaydı başarısız oldu.");
-                    hideGlobalProgress();
-                }
-            } catch (error) {
-                alert("Sistem hatası.");
-                hideGlobalProgress();
-            }
-
-            function hideGlobalProgress() {
-                isUploading = false;
-                globalContainer.classList.add('animate__fadeOutUp');
-                setTimeout(() => {
-                    globalContainer.classList.add('hidden');
-                    globalContainer.classList.remove('animate__fadeOutUp');
-                    globalProgressBar.style.width = `0%`;
-                }, 500);
+        // Tekli Silme
+        function deleteSingleImage(id) {
+            if(confirm('Bu görseli silmek istediğinize emin misiniz?')) {
+                galleryData = galleryData.filter(item => item.id !== id);
+                localStorage.setItem('kngl_gallery', JSON.stringify(galleryData));
+                renderGallery();
             }
         }
-// Resmi açarken modal'a id'yi de taşıyalım
-let currentEditingId = null;
 
-function openModal(url, caption, id) {
-    currentEditingId = id;
-    const imgEl = document.getElementById('modal-img');
-    const inputEl = document.getElementById('modal-caption-input');
-    const saveBtn = document.getElementById('save-caption-btn');
-    
-    imgEl.src = url;
-    inputEl.value = caption;
-    
-    // Adminse düzenleme kutusunu göster
-    if (sessionStorage.getItem('kngl_logged') === 'true') {
-        inputEl.disabled = false;
-        saveBtn.classList.remove('hidden');
-    } else {
-        inputEl.disabled = true;
-        saveBtn.classList.add('hidden');
-    }
-    
-    document.getElementById('image-modal').classList.remove('hidden');
-}
+        // Toplu Silme Modu Geçişleri
+        function toggleBulkSelectMode(activate) {
+            isBulkDeleteMode = activate;
+            selectedItems = [];
+            document.getElementById('selectCount').innerText = "0";
 
-// Güncelleme işlemi
-async function saveCaption() {
-    const newCaption = document.getElementById('modal-caption-input').value;
-    const btn = document.getElementById('save-caption-btn');
-    
-    btn.innerText = "Kaydediliyor...";
-    
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/gallery?id=eq.${currentEditingId}`, {
-            method: 'PATCH', // Güncelleme için PATCH kullanıyoruz
-            headers: {
-                "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${SUPABASE_KEY}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ caption: newCaption })
-        });
-        
-        if (res.ok) {
-            alert("Açıklama başarıyla güncellendi!");
-            // Yerel veriyi güncelle
-            const img = allImages.find(i => i.id == currentEditingId);
-            if(img) img.caption = newCaption;
-            renderPage(); // Galeriyi yenile
-            closeModal();
-        } else {
-            alert("Güncelleme başarısız.");
+            if(activate) {
+                document.getElementById('bulkDeleteModeBtn').style.display = 'none';
+                document.getElementById('bulkDeleteActions').style.display = 'flex';
+            } else {
+                document.getElementById('bulkDeleteModeBtn').style.display = 'inline-flex';
+                document.getElementById('bulkDeleteActions').style.display = 'none';
+            }
+            renderGallery();
         }
-    } catch (e) {
-        alert("Bağlantı hatası.");
-    } finally {
-        btn.innerText = "Kaydet";
-    }
-}
 
-        // --- SÜRÜKLE BIRAK MANTIĞI ---
-const dropZone = document.getElementById('drop-zone');
-const fileInput = document.getElementById('img-file');
-
-dropZone.addEventListener('click', () => fileInput.click());
-
-dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.classList.add('border-purple-300', 'bg-purple-900/20');
-});
-
-dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('border-purple-300', 'bg-purple-900/20');
-});
-
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('border-purple-300', 'bg-purple-900/20');
-    
-    const files = e.dataTransfer.files;
-    if (files.length) {
-        fileInput.files = files; // Dosyaları input'a ata
-        showPreviews(files);    // Önizlemeleri göster
-    }
-});
-
-// Önizleme Fonksiyonu
-function showPreviews(files) {
-    const previewContainer = document.getElementById('preview-container');
-    previewContainer.innerHTML = ''; // Öncekileri temizle
-
-    Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const div = document.createElement('div');
-            div.className = "aspect-square rounded-lg overflow-hidden border border-purple-500/30";
-            div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-            previewContainer.appendChild(div);
+        // Öğe Seçimi
+        function handleSelectItem(id) {
+            if(selectedItems.includes(id)) {
+                selectedItems = selectedItems.filter(item => item !== id);
+            } else {
+                selectedItems.push(id);
+            }
+            document.getElementById('selectCount').innerText = selectedItems.length;
         }
-        reader.readAsDataURL(file);
-    });
-}
 
-// --- GİRİŞ YAPILDIĞINDA EKRANI DEĞİŞTİRME ---
-// Mevcut checkAdmin fonksiyonunun içine şu iki satırı ekle:
-function checkAdmin() {
-    // ... şifre kontrol kodların ...
-    if (sifreDogru) {
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('upload-section').classList.remove('hidden');
-        sessionStorage.setItem('kngl_logged', 'true');
-    }
-}
+        // Seçilenleri Toplu Silme işlemi
+        function deleteSelectedImages() {
+            if(selectedItems.length === 0) {
+                alert('Lütfen silmek için önce görsel seçin.');
+                return;
+            }
 
-window.addEventListener('load', () => {
-    const preloader = document.getElementById('logo-preloader');
-    
-    setTimeout(() => {
-        preloader.classList.add('fade-out');
-        
-        // Animasyon bittikten sonra kaydırma çubuğunu serbest bırak
-        setTimeout(() => {
-            document.documentElement.style.overflow = "auto";
-            document.body.style.overflow = "auto";
-            preloader.style.display = 'none';
-        }, 800); 
-    }, 1500); // 2.5 saniye göster
-});
-        
+            if(confirm(`${selectedItems.length} adet görseli toplu olarak silmek istediğinize emin misiniz?`)) {
+                galleryData = galleryData.filter(item => !selectedItems.includes(item.id));
+                localStorage.setItem('kngl_gallery', JSON.stringify(galleryData));
+                toggleBulkSelectMode(false);
+            }
+        }
     </script>
 </body>
 </html>
