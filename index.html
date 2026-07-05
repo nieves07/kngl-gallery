@@ -810,5 +810,42 @@ window.addEventListener('load', () => {
 
         
     </script>
+
+<script>
+    async function loadGalleryFromSupabase() {
+        const supabaseUrl = 'https://mmkusfynqosmvpsbwewc.supabase.co/rest/v1/'; // Proje Ayarları -> API kısmından al
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ta3VzZnlucW9zbXZwc2J3ZXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNzg0MzEsImV4cCI6MjA5ODc1NDQzMX0.pPtgFT_JdQaVqftGWTQxTUnulQ8WUNvrbdy5AG4jy-4'; // Proje Ayarları -> API kısmından al
+
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/gallery?select=url`, {
+                headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            
+            const container = document.getElementById('gallery-container');
+            
+            // Veri varsa listeyi oluştur
+            container.innerHTML = data.map(item => `
+                <div class="aspect-square rounded-lg overflow-hidden border border-purple-900/50 bg-gray-800">
+                    <img src="${item.url}" 
+                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" 
+                         loading="lazy">
+                </div>
+            `).join('');
+            
+        } catch (error) {
+            console.error("Veri çekilemedi:", error);
+        }
+    }
+
+    loadGalleryFromSupabase();
+</script>
+
+    
 </body>
 </html>
