@@ -322,7 +322,6 @@
             text-transform: uppercase;
         }
 
-        /* 5'li Grid Düzeni */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr); 
@@ -391,7 +390,6 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* --- SİLME VE SEÇİM BUTONLARI --- */
         .delete-card-btn {
             position: absolute;
             top: 12px; right: 12px;
@@ -432,7 +430,6 @@
             box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        /* --- LIGHTBOX --- */
         .lightbox-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -461,7 +458,6 @@
             -webkit-user-drag: none;
         }
 
-        /* --- DETAYLI LOG PANELİ --- */
         .live-logger-panel {
             position: fixed;
             bottom: 20px;
@@ -575,15 +571,20 @@
         <div id="loading" style="text-align:center; padding:20px; display:none; color: var(--text-gray); font-weight: bold;">Daha fazla görsel yükleniyor...</div>
     </div>
 
+    <!-- TARAYICI ŞİFRE KAYDETME UYUMLU DOĞRULAMA PANELİ -->
     <div id="passwordModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn" id="closePassModalBtn">&times;</button>
             <h2>Yönetici Doğrulaması</h2>
             <p class="panel-desc">Yükleme paneline erişmek için şifreyi girin.</p>
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-                <input type="password" id="passwordInput" placeholder="Erişim şifresini yazın...">
-                <button id="loginBtn" style="width: 100%; justify-content: center;">Onayla</button>
-            </div>
+            
+            <!-- Standart form ve gizli username alanı tarayıcının şifreyi algılamasını sağlar -->
+            <form id="loginForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 16px;">
+                <input type="text" name="username" value="admin" style="display:none;" autocomplete="username">
+                <input type="password" id="passwordInput" name="password" placeholder="Erişim şifresini yazın..." autocomplete="current-password" required>
+                <button type="submit" id="loginBtn" style="width: 100%; justify-content: center;">Onayla</button>
+            </form>
+            
             <p id="loginError" style="color: var(--danger-red); display: none; margin-top: 14px; font-size: 14px; font-weight: 600; text-align: center;">Hatalı Şifre!</p>
         </div>
     </div>
@@ -700,7 +701,7 @@
         const passwordModal = document.getElementById('passwordModal');
         const closePassModalBtn = document.getElementById('closePassModalBtn');
         const passwordInput = document.getElementById('passwordInput');
-        const loginBtn = document.getElementById('loginBtn');
+        const loginForm = document.getElementById('loginForm');
         const loginError = document.getElementById('loginError');
         
         const uploadModal = document.getElementById('uploadModal');
@@ -776,20 +777,26 @@
             if (e.target === uploadModal) uploadModal.style.display = 'none'; 
         });
 
-        if (loginBtn) {
-            loginBtn.addEventListener('click', function() {
-                if (passwordInput && passwordInput.value === 'nieves1312') {
-                    isAdminActive = true;
-                    sessionStorage.setItem('kngl_admin_session', 'true');
-                    passwordModal.style.display = 'none';
-                    uploadModal.style.display = 'flex';
-                    if (exitAdminModeBtn) exitAdminModeBtn.style.display = 'inline-flex';
-                    addLog('Sistem giriş anahtarı eşleşti! Yönetici hakları teslim edildi.', 'success');
-                    refreshGalleryUI(); 
-                } else {
-                    if (loginError) loginError.style.display = 'block';
-                    addLog('Giriş Reddedildi: Yanlış şifre kombinasyonu girildi.', 'error');
-                }
+        // Giriş Doğrulama Fonksiyonu (Hem buton tıklaması hem Form Submit tetikler)
+        function handleLogin() {
+            if (passwordInput && passwordInput.value === 'nieves1312') {
+                isAdminActive = true;
+                sessionStorage.setItem('kngl_admin_session', 'true');
+                passwordModal.style.display = 'none';
+                uploadModal.style.display = 'flex';
+                if (exitAdminModeBtn) exitAdminModeBtn.style.display = 'inline-flex';
+                addLog('Sistem giriş anahtarı eşleşti! Yönetici hakları teslim edildi.', 'success');
+                refreshGalleryUI(); 
+            } else {
+                if (loginError) loginError.style.display = 'block';
+                addLog('Giriş Reddedildi: Yanlış şifre kombinasyonu girildi.', 'error');
+            }
+        }
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleLogin();
             });
         }
 
@@ -898,11 +905,10 @@
                 if (!knglSupaClient) return;
                 if (!tags) return alert('Lütfen etiket (tag) alanını doldurun.');
                 
-                // Link Giriş Algoritması Geliştirildi (Satır sonu veya virgülleri ayıklar)
                 let linkUrls = [];
                 if (linkInputRaw.trim()) {
                     linkUrls = linkInputRaw
-                        .split(/[\n,]+/) // Hem alt satır hem virgüle göre ayırır
+                        .split(/[\n,]+/) 
                         .map(url => url.trim())
                         .filter(url => url.startsWith('http://') || url.startsWith('https://'));
                 }
@@ -915,10 +921,8 @@
                 statusText.innerText = "Kuyruk işleniyor, lütfen bekleyin...";
                 addLog('Toplu yükleme/indeksleme algoritması başlatıldı...', 'info');
 
-                // --- 1. Adım: Çoklu Linklerin Veritabanına Yazılması ---
                 if (linkUrls.length > 0) {
                     addLog(`Toplam ${linkUrls.length} adet uzak URL veritabanına indeksleniyor...`, 'info');
-                    
                     const insertRows = linkUrls.map(url => ({ image_url: url, tags: tags }));
                     const { error: bulkLinkErr } = await knglSupaClient.from('gallery_images').insert(insertRows);
                     
@@ -930,7 +934,15 @@
                     document.getElementById('linkInput').value = '';
                 }
 
-                // --- 2. Adım: Kuyruktaki Yerel Dosyaların Yüklenmesi ---
+                if (selectedFilesQueue.length === 0) {
+                    statusText.style.color = 'var(--accent-green)';
+                    statusText.innerText = 'Tüm medyalar sisteme işlendi!';
+                    fetchGalleryData();
+                    document.getElementById('tagInput').value = '';
+                    setTimeout(() => statusText.innerText = '', 3000);
+                    return;
+                }
+
                 if (selectedFilesQueue.length > 0) {
                     addLog(`Toplam ${selectedFilesQueue.length} adet yerel dosya buluta aktarılıyor.`, 'storage');
                     for (let i = 0; i < selectedFilesQueue.length; i++) {
