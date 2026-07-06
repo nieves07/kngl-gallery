@@ -310,12 +310,33 @@
             text-transform: uppercase;
         }
 
-        /* --- GALERİ GRID --- */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-        }
+        /* 5'li Grid Düzeni */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Her satırda 5 adet */
+    gap: 15px;
+    opacity: 1;
+    transition: opacity 0.4s ease-in-out; /* Sayfa geçiş efekti */
+}
+
+/* Sayfalama Butonları */
+.pagination-area {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    background: #171a24;
+    border: 1px solid var(--border);
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         .media-card {
             background-color: var(--bg-card);
