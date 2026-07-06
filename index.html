@@ -482,42 +482,33 @@
             border-color: var(--accent-green);
         }
 
-.delete-card-btn {
-    position: absolute;
-    top: 12px; 
-    right: 12px;
-    background-color: rgba(255, 74, 74, 0.95);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    width: 34px;
-    height: 34px;
-    
-    /* İşaretin hizalaması */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    cursor: pointer;
-    transition: all 0.2s ease;
-    z-index: 15; 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    pointer-events: auto;
-}
-
-/* Çarpı işaretini burada tek ve kontrollü olarak ekliyoruz */
-.delete-card-btn::before {
-    content: "×"; 
-    font-size: 25px;
-    font-weight: bold;
-    line-height: 0;
-    margin-top: -3px; /* Yukarı-aşağı kaydırmak için bu değeri değiştir */
-}
-
-.delete-card-btn:hover {
-    background-color: var(--danger-red);
-    transform: scale(1.1);
-}
+        /* SILME BUTONU KÖŞEYE SABİTLENDİ */
+        .delete-card-btn {
+            position: absolute;
+            top: 12px; 
+            right: 12px;
+            background-color: rgba(255, 74, 74, 0.95);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            font-size: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 15; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            line-height: 1;
+            pointer-events: auto; /* Tıklanabilir olmasını sağlar */
+        }
+        .delete-card-btn:hover {
+            background-color: var(--danger-red);
+            transform: scale(1.1);
+        }
 
         /* SEÇİM KUTUSU DA RESMİN SOL ÜSTÜNE SABİTLENDİ */
         .card-select-checkbox {
@@ -1247,7 +1238,7 @@
                 card.innerHTML = `
                     <div class="img-container">
                         <input type="checkbox" class="card-select-checkbox" style="display: ${adminDisplay}" data-id="${item.id}">
-                        <button class="delete-card-btn" style="display: ${adminDisplay}" data-id="${item.id}"></button>
+                        <button class="delete-card-btn" style="display: ${adminDisplay}" data-id="${item.id}">&times;</button>
                         
                         <img src="${item.image_url}" alt="KNGLRP Media" loading="lazy" draggable="false">
                         
