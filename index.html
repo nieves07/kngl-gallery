@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KNGLRP | Premium Gallery</title>
+    <!-- Google Fonts - Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -128,7 +130,9 @@
             color: #fff;
         }
 
+        /* Başlangıçta CSS ile gizli tutuyoruz */
         #loginSection, #uploadSection {
+            display: none;
             background-color: var(--bg-surface);
             padding: 30px;
             border-radius: 16px;
@@ -262,7 +266,8 @@
             </div>
         </header>
 
-        <section id="loginSection" style="display: none;">
+        <!-- Giriş Formu -->
+        <section id="loginSection">
             <h2>Yetkili Şifresi</h2>
             <div class="input-group">
                 <input type="password" id="passwordInput" placeholder="Erişim kodunu girin...">
@@ -271,7 +276,8 @@
             <p id="loginError" style="color: var(--danger); display: none; margin-top: 12px; font-size: 14px;">Hatalı erişim kodu!</p>
         </section>
 
-        <section id="uploadSection" style="display: none;">
+        <!-- Admin Yükleme Bölümü -->
+        <section id="uploadSection">
             <h2>Galeriye Yeni Medya Ekle</h2>
             
             <div class="input-group">
@@ -290,13 +296,14 @@
             <p id="uploadStatus" style="margin-top: 12px; font-size: 14px; font-weight: 500;"></p>
         </section>
 
+        <!-- Galeri Alanı -->
         <main id="galleryGrid" class="grid-container">
-            </main>
+            <!-- JavaScript dinamik basacak -->
+        </main>
     </div>
 
     <script>
         // --- 1. SUPABASE AYARLARI ---
-        // Bilgileri girdiğinde tırnak işaretlerini silmediğinden emin ol ('URL' şeklinde kalmalı)
         const SUPABASE_URL = 'https://rqtlwqphwfjlysnwkpel.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxdGx3cXBod2ZqbHlzbndrcGVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDEyNzIsImV4cCI6MjA5ODkxNzI3Mn0.0Xx7BJe0O5VB5uZIZL8LCqOMTTWvSBnGKtGTY6kQGpY';
         
@@ -320,30 +327,33 @@
         const fileInput = document.getElementById('fileInput');
         let selectedFile = null;
 
-        // --- 2. YETKİLİ PANEL BUTON KONTROLLERİ (GARANTİLİ ÇALIŞIR) ---
-        function checkLocalAuth() {
-            if (sessionStorage.getItem('isKnglrpAdmin') === 'true') {
+        // --- 2. GİRİŞ VE PANEL AÇMA-KAPAMA SİSTEMİ ---
+        function updateUI() {
+            const isAdmin = sessionStorage.getItem('isKnglrpAdmin') === 'true';
+            
+            if (isAdmin) {
                 uploadSection.style.display = 'block';
-                showLoginBtn.style.display = 'none';
                 logoutBtn.style.display = 'inline-block';
+                showLoginBtn.style.display = 'none';
                 loginSection.style.display = 'none';
             } else {
                 uploadSection.style.display = 'none';
-                showLoginBtn.style.display = 'inline-block';
                 logoutBtn.style.display = 'none';
+                showLoginBtn.style.display = 'inline-block';
+                // Giriş paneli butona basılmadığı sürece kapalı kalır
             }
         }
 
-        // Tıklama olayı tamamen izole edildi, asla çökmez.
-        showLoginBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (loginSection.style.display === 'none') {
+        // Yetkili girişi butonuna basıldığında aç-kapat yapısı (Tamamen bağımsız)
+        showLoginBtn.addEventListener('click', function() {
+            if (loginSection.style.display === 'none' || loginSection.style.display === '') {
                 loginSection.style.display = 'block';
             } else {
                 loginSection.style.display = 'none';
             }
         });
 
+        // Şifre onaylama butonu
         document.getElementById('loginBtn').addEventListener('click', function() {
             const password = document.getElementById('passwordInput').value;
             const errEl = document.getElementById('loginError');
@@ -352,15 +362,16 @@
                 errEl.style.display = 'none';
                 sessionStorage.setItem('isKnglrpAdmin', 'true');
                 document.getElementById('passwordInput').value = '';
-                checkLocalAuth();
+                updateUI();
             } else {
                 errEl.style.display = 'block';
             }
         });
 
+        // Çıkış yap butonu
         logoutBtn.addEventListener('click', function() {
             sessionStorage.removeItem('isKnglrpAdmin');
-            checkLocalAuth();
+            updateUI();
         });
 
         // --- 3. GÖRSEL LİSTELEME SİSTEMİ ---
@@ -433,7 +444,7 @@
             }
         });
 
-        // --- 5. MEDYA YUKLE BUTONU VE DB KAYIT ---
+        // --- 5. MEDYA YÜKLEME VE DB KAYIT ---
         document.getElementById('uploadBtn').addEventListener('click', async () => {
             const linkInput = document.getElementById('linkInput').value;
             const tags = document.getElementById('tagInput').value;
@@ -489,8 +500,8 @@
             }
         });
 
-        // Başlangıç tetikleyicileri
-        checkLocalAuth();
+        // Sayfa ilk yüklendiğinde durum kontrolü yap
+        updateUI();
         fetchImages();
     </script>
 </body>
