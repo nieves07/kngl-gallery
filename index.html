@@ -148,33 +148,67 @@
             box-shadow: 0 5px 15px rgba(255, 74, 74, 0.2);
         }
 
-        /* --- YÜKLEME PANELİ (YÖNETİCİ MODU) --- */
-        #uploadSection {
-            background-color: var(--bg-card);
-            border: 1px solid var(--accent-green);
-            box-shadow: 0 0 20px rgba(0, 255, 135, 0.05);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 40px;
+        /* --- MODAL POPUP YAPISI (YÜKLEME VE ŞİFRE PANELİ ORTAK) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(5, 5, 8, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 999;
             display: none;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            justify-content: center;
+            padding: 20px;
         }
 
-        #uploadSection h2 {
-            font-size: 20px;
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            position: relative;
+        }
+
+        /* Yükleme Paneli Genişliği */
+        .modal-content.large-panel {
+            max-width: 750px;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 30px rgba(0, 255, 135, 0.1);
+        }
+
+        .modal-content h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
             font-weight: 700;
         }
 
+        .modal-content p {
+            color: var(--text-gray);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close-btn:hover { color: white; }
+
+        /* --- YÜKLEME GRID TASARIMI --- */
         .upload-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
+            margin-top: 15px;
         }
 
         .drop-zone {
@@ -214,52 +248,6 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
-
-        /* --- ŞİFRE MODAL POPUP --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(5, 5, 8, 0.9);
-            backdrop-filter: blur(8px);
-            z-index: 999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            width: 100%;
-            max-width: 400px;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            position: relative;
-        }
-
-        .modal-content h2 {
-            font-size: 22px;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .modal-content p {
-            color: var(--text-gray);
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .modal-close-btn {
-            position: absolute;
-            top: 20px; right: 20px;
-            background: transparent;
-            border: none;
-            color: var(--text-gray);
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .modal-close-btn:hover { color: white; }
 
         /* --- GALERİ GRID --- */
         .gallery-grid {
@@ -319,7 +307,7 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* --- SİLME BUTONU --- */
+        /* --- TEKLİ SİLME BUTONU --- */
         .delete-card-btn {
             position: absolute;
             top: 12px; right: 12px;
@@ -343,13 +331,60 @@
             transform: scale(1.1);
         }
 
-        @media (max-width: 900px) {
-            .upload-grid { grid-template-columns: 1fr; }
+        /* --- SAĞ ALT CANLI HATA / LOG PANELİ --- */
+        .live-logger-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 360px;
+            max-height: 200px;
+            background-color: rgba(11, 13, 20, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
-        @media (max-width: 650px) {
-            header { flex-direction: column; align-items: stretch; }
-            .controls-area { flex-direction: column; align-items: stretch; }
-            #searchInput { width: 100%; }
+
+        .logger-header {
+            background-color: var(--bg-card);
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logger-body {
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            scroll-behavior: smooth;
+        }
+
+        .log-line {
+            line-height: 1.4;
+            word-break: break-all;
+        }
+        .log-line.success { color: var(--accent-green); }
+        .log-line.error { color: var(--danger-red); font-weight: bold; }
+        .log-line.info { color: #50fa7b; }
+
+        @media (max-width: 768px) {
+            .upload-grid { grid-template-columns: 1fr; }
+            .live-logger-panel { width: calc(100% - 40px); left: 20px; right: 20px; }
         }
     </style>
 </head>
@@ -363,31 +398,9 @@
             <div class="controls-area">
                 <input type="text" id="searchInput" placeholder="Tag araması yap...">
                 <button id="mainActionBtn">Resim Yükle</button>
+                <button id="exitAdminModeBtn" class="btn-secondary" style="display: none;">Admin Kapat</button>
             </div>
         </header>
-
-        <section id="uploadSection">
-            <div class="panel-header">
-                <h2>Yönetici Kontrol Paneli <span style="color:var(--accent-green); font-size:12px; font-family:'JetBrains Mono'">(Aktif)</span></h2>
-                <div style="display: flex; gap: 12px;">
-                    <button id="deleteAllBtn" class="btn-danger">Tüm Resimleri Sil</button>
-                    <button id="closeAdminBtn" class="btn-secondary">Yönetici Modunu Kapat</button>
-                </div>
-            </div>
-            <div class="upload-grid">
-                <div id="dropZone" class="drop-zone">
-                    <span id="dropZoneText">Görsel sürükleyin veya tıklayıp dosyadan seçin</span>
-                    <input type="file" id="fileInput" accept="image/*" hidden>
-                </div>
-                <div class="form-right">
-                    <div class="divider-text">Veya Doğrudan Link</div>
-                    <input type="text" id="linkInput" placeholder="Görsel adresi (URL) yapıştırın...">
-                    <input type="text" id="tagInput" placeholder="Etiketler (virgülle ayırın: lspd, illegal, car)">
-                    <button id="uploadBtn">Galeriye Gönder</button>
-                </div>
-            </div>
-            <p id="uploadStatus" style="margin-top: 16px; font-size: 14px; font-weight: 600;"></p>
-        </section>
 
         <main id="galleryGrid" class="gallery-grid">
             </main>
@@ -395,9 +408,9 @@
 
     <div id="passwordModal" class="modal-overlay">
         <div class="modal-content">
-            <button class="modal-close-btn" id="closeModalBtn">&times;</button>
+            <button class="modal-close-btn" id="closePassModalBtn">&times;</button>
             <h2>Yönetici Doğrulaması</h2>
-            <p>Görsel yükleme ve silme paneline erişmek için şifreyi girin.</p>
+            <p>Yükleme paneline erişmek için şifreyi girin.</p>
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <input type="password" id="passwordInput" placeholder="Erişim şifresini yazın...">
                 <button id="loginBtn" style="width: 100%; justify-content: center;">Onayla</button>
@@ -406,9 +419,44 @@
         </div>
     </div>
 
+    <div id="uploadModal" class="modal-overlay">
+        <div class="modal-content large-panel">
+            <button class="modal-close-btn" id="closeUploadModalBtn">&times;</button>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+                <h2>Görsel Kontrol Paneli</h2>
+                <button id="deleteAllBtn" class="btn-danger" style="padding: 6px 12px; font-size: 11px;">Tüm Galeri Sıfırla</button>
+            </div>
+            <p>Seçtiğiniz medyalar anında sunucu ağında arka plana işlenir.</p>
+            
+            <div class="upload-grid">
+                <div id="dropZone" class="drop-zone">
+                    <span id="dropZoneText">Görsel sürükleyin veya tıklayıp dosyadan seçin</span>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                </div>
+                <div class="form-right">
+                    <div class="divider-text">Veya Doğrudan Link</div>
+                    <input type="text" id="linkInput" placeholder="Görsel adresi (URL) yapıştırın...">
+                    <input type="text" id="tagInput" placeholder="Etiketler (virgülle ayırın: lspd, car)">
+                    <button id="uploadBtn" style="justify-content: center;">Galeriye Gönder</button>
+                </div>
+            </div>
+            <p id="uploadStatus" style="margin-top: 16px; font-size: 13px; font-weight: 600; text-align: center; color: var(--accent-green);"></p>
+        </div>
+    </div>
+
+    <div class="live-logger-panel">
+        <div class="logger-header">
+            <span>Sistem Log Paneli</span>
+            <span style="color: var(--accent-green); font-size: 9px; font-family: monospace;">● CANLI</span>
+        </div>
+        <div class="logger-body" id="loggerBody">
+            <div class="log-line info">[Sistem] Galeri paneli başlatıldı. Bağlantı aranıyor...</div>
+        </div>
+    </div>
+
     <script>
         // ==========================================
-        // 1. SUPABASE AYARLARI (İsim çakışması engellendi)
+        // 1. SUPABASE AYARLARI
         // ==========================================
         const MY_SUPABASE_TARGET_URL = 'https://rqtlwqphwfjlysnwkpel.supabase.co';
         const MY_SUPABASE_TARGET_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxdGx3cXBod2ZqbHlzbndrcGVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDEyNzIsImV4cCI6MjA5ODkxNzI3Mn0.0Xx7BJe0O5VB5uZIZL8LCqOMTTWvSBnGKtGTY6kQGpY';
@@ -416,26 +464,45 @@
         let knglSupaClient = null; 
         let isAdminActive = false; 
 
+        // Sağ alt canlı loglama fonksiyonu
+        function addLog(text, type = 'info') {
+            const loggerBody = document.getElementById('loggerBody');
+            if (!loggerBody) return;
+            const time = new Date().toLocaleTimeString();
+            const logLine = document.createElement('div');
+            logLine.className = `log-line ${type}`;
+            logLine.innerText = `[${time}] ${text}`;
+            loggerBody.appendChild(logLine);
+            loggerBody.scrollTop = loggerBody.scrollHeight; // Otomatik aşağı kaydır
+        }
+
         try {
             if (window.supabase && MY_SUPABASE_TARGET_URL && MY_SUPABASE_TARGET_URL.startsWith('http')) {
                 knglSupaClient = window.supabase.createClient(MY_SUPABASE_TARGET_URL, MY_SUPABASE_TARGET_KEY);
+                addLog('Supabase bağlantısı başarıyla sağlandı.', 'success');
+            } else {
+                addLog('HATA: Koddaki Supabase URL veya Key alanları tanımsız!', 'error');
             }
         } catch(e) {
-            console.error("Supabase yükleme pas geçildi:", e);
+            addLog('Bağlantı esnasında kritik hata: ' + e.message, 'error');
         }
 
         // DOM Elementleri
         const galleryGrid = document.getElementById('galleryGrid');
         const searchInput = document.getElementById('searchInput');
-        const uploadSection = document.getElementById('uploadSection');
         const mainActionBtn = document.getElementById('mainActionBtn');
-        const closeAdminBtn = document.getElementById('closeAdminBtn');
+        const exitAdminModeBtn = document.getElementById('exitAdminModeBtn');
         const deleteAllBtn = document.getElementById('deleteAllBtn');
+        
         const passwordModal = document.getElementById('passwordModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
+        const closePassModalBtn = document.getElementById('closePassModalBtn');
         const passwordInput = document.getElementById('passwordInput');
         const loginBtn = document.getElementById('loginBtn');
         const loginError = document.getElementById('loginError');
+        
+        const uploadModal = document.getElementById('uploadModal');
+        const closeUploadModalBtn = document.getElementById('closeUploadModalBtn');
+        
         const dropZone = document.getElementById('dropZone');
         const dropZoneText = document.getElementById('dropZoneText');
         const fileInput = document.getElementById('fileInput');
@@ -443,73 +510,183 @@
         let selectedFile = null;
 
         // ==========================================
-        // 2. MODAL & PANEL AÇILIŞ MANTIĞI
+        // 2. MODAL POPUP TETİKLEYİCİLERİ
         // ==========================================
         if (mainActionBtn) {
             mainActionBtn.addEventListener('click', function() {
                 if (isAdminActive) {
-                    if (uploadSection) uploadSection.scrollIntoView({ behavior: 'smooth' });
+                    // Admin zaten aktifse şifre sormadan direkt Yükleme Modalını aç
+                    uploadModal.style.display = 'flex';
+                    addLog('Yükleme paneli pop-up olarak açıldı.', 'info');
                 } else {
                     if (loginError) loginError.style.display = 'none';
                     if (passwordInput) { passwordInput.value = ''; passwordInput.focus(); }
-                    if (passwordModal) passwordModal.style.display = 'flex';
+                    passwordModal.style.display = 'flex';
                 }
             });
         }
 
-        if (closeModalBtn) closeModalBtn.addEventListener('click', () => passwordModal.style.display = 'none');
-        window.addEventListener('click', (e) => { if (e.target === passwordModal) passwordModal.style.display = 'none'; });
+        // Kapatma Mekanizmaları
+        if (closePassModalBtn) closePassModalBtn.addEventListener('click', () => passwordModal.style.display = 'none');
+        if (closeUploadModalBtn) closeUploadModalBtn.addEventListener('click', () => uploadModal.style.display = 'none');
+        
+        window.addEventListener('click', (e) => { 
+            if (e.target === passwordModal) passwordModal.style.display = 'none'; 
+            if (e.target === uploadModal) uploadModal.style.display = 'none'; 
+        });
 
         // Şifre Giriş Kontrolü
         if (loginBtn) {
             loginBtn.addEventListener('click', function() {
                 if (passwordInput && passwordInput.value === 'nieves1312') {
                     isAdminActive = true;
-                    if (passwordModal) passwordModal.style.display = 'none';
-                    if (uploadSection) uploadSection.style.display = 'block';
-                    if (mainActionBtn) mainActionBtn.style.display = 'none';
-                    if (uploadSection) uploadSection.scrollIntoView({ behavior: 'smooth' });
+                    passwordModal.style.display = 'none';
+                    uploadModal.style.display = 'flex'; // Yükleme modalını aç
+                    if (exitAdminModeBtn) exitAdminModeBtn.style.display = 'inline-flex';
+                    addLog('Yönetici kimliği doğrulandı. Admin modu aktif.', 'success');
                     
+                    // Arka plandaki silme butonlarını görünür yap
                     document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'flex');
                 } else {
                     if (loginError) loginError.style.display = 'block';
+                    addLog('Hatalı şifre denemesi yapıldı!', 'error');
                 }
             });
         }
 
-        // Yönetici Modunu Kapatma
-        if (closeAdminBtn) {
-            closeAdminBtn.addEventListener('click', function() {
+        // Üst Menüdeki "Admin Kapat" Butonu
+        if (exitAdminModeBtn) {
+            exitAdminModeBtn.addEventListener('click', function() {
                 isAdminActive = false;
-                if (uploadSection) uploadSection.style.display = 'none';
-                if (mainActionBtn) mainActionBtn.style.display = 'inline-flex';
-                
+                exitAdminModeBtn.style.display = 'none';
+                uploadModal.style.display = 'none';
                 document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'none');
+                addLog('Yönetici modundan güvenli çıkış yapıldı.', 'info');
             });
         }
 
         // ==========================================
-        // 3. RESİMLERİ VERİTABANINDAN ÇEKME
+        // 3. MEDYA SELECTION & DRAG-DROP
+        // ==========================================
+        if (dropZone) {
+            dropZone.addEventListener('click', () => fileInput && fileInput.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer && e.dataTransfer.files.length) {
+                    selectedFile = e.dataTransfer.files[0];
+                    if (dropZoneText) {
+                        dropZoneText.innerText = `Seçilen: ${selectedFile.name}`;
+                        dropZoneText.style.color = 'var(--accent-green)';
+                    }
+                    addLog(`Dosya sürüklendi: ${selectedFile.name}`, 'info');
+                }
+            });
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length) {
+                    selectedFile = e.target.files[0];
+                    if (dropZoneText) {
+                        dropZoneText.innerText = `Seçilen: ${selectedFile.name}`;
+                        dropZoneText.style.color = 'var(--accent-green)';
+                    }
+                    addLog(`Dosya seçildi: ${selectedFile.name}`, 'info');
+                }
+            });
+        }
+
+        // ==========================================
+        // 4. BULUT SUNUCUSUNA DOSYA GÖNDERME
+        // ==========================================
+        if (uploadBtn) {
+            uploadBtn.addEventListener('click', async () => {
+                const linkInput = document.getElementById('linkInput').value;
+                const tags = document.getElementById('tagInput').value;
+                const statusText = document.getElementById('uploadStatus');
+                
+                if (!knglSupaClient) return addLog('HATA: Veritabanı istemcisi aktif değil.', 'error');
+                if (!tags) return alert('Lütfen arama filtreleri için tag alanını doldurun.');
+                if (!selectedFile && !linkInput) return alert('Dosya yükleyin veya bir URL adresi girin.');
+
+                statusText.style.color = 'var(--text-white)';
+                statusText.innerText = "İşlem sürüyor...";
+                addLog('Sunucuya veri gönderme işlemi başlatıldı...', 'info');
+                
+                let finalImageUrl = linkInput;
+
+                try {
+                    if (selectedFile) {
+                        const fileExt = selectedFile.name.split('.').pop();
+                        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                        
+                        const { error: uploadError } = await knglSupaClient.storage
+                            .from('gallery')
+                            .upload(fileName, selectedFile);
+                            
+                        if (uploadError) {
+                            statusText.style.color = 'var(--danger-red)';
+                            statusText.innerText = 'Storage Hatası oluştu (Sağ alta bakın)';
+                            addLog('Storage Hatası: ' + uploadError.message, 'error');
+                            return;
+                        }
+
+                        const { data } = knglSupaClient.storage.from('gallery').getPublicUrl(fileName);
+                        finalImageUrl = data.publicUrl;
+                        addLog('Dosya Storage alanına başarıyla yazıldı.', 'success');
+                    }
+
+                    const { error: dbError } = await knglSupaClient.from('gallery_images').insert([
+                        { image_url: finalImageUrl, tags: tags }
+                    ]);
+
+                    if (dbError) {
+                        statusText.style.color = 'var(--danger-red)';
+                        statusText.innerText = 'Veritabanı kaydı başarısız.';
+                        addLog('Database Hatası: ' + dbError.message, 'error');
+                    } else {
+                        statusText.style.color = 'var(--accent-green)';
+                        statusText.innerText = 'Medya başarıyla sisteme yüklendi!';
+                        addLog('Medya ve tag kayıtları veri tabanına işlendi.', 'success');
+                        
+                        // Temizlik
+                        document.getElementById('linkInput').value = '';
+                        document.getElementById('tagInput').value = '';
+                        selectedFile = null;
+                        if (dropZoneText) {
+                            dropZoneText.innerText = 'Görsel sürükleyin veya tıklayıp dosyadan seçin';
+                            dropZoneText.style.color = 'var(--text-gray)';
+                        }
+                        if (fileInput) fileInput.value = '';
+                        
+                        setTimeout(() => { if (statusText) statusText.innerText = ''; }, 4000);
+                        fetchImages(); // Arka plandaki listeyi yenile
+                    }
+                } catch (err) {
+                    addLog('Beklenmedik Sistem Hatası: ' + err.message, 'error');
+                }
+            });
+        }
+
+        // ==========================================
+        // 5. RESİMLERİ VERİTABANINDAN ÇEKME (FETCH)
         // ==========================================
         async function fetchImages(searchQuery = '') {
             if (!galleryGrid) return;
             galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-gray);">Medyalar senkronize ediliyor...</p>';
             
-            if (!knglSupaClient) {
-                galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-gray);">Supabase veritabanı ayarları henüz girilmemiş.</p>';
-                return;
-            }
+            if (!knglSupaClient) return;
 
             try {
                 let query = knglSupaClient.from('gallery_images').select('*').order('created_at', { ascending: false });
-                
-                if (searchQuery) {
-                    query = query.ilike('tags', `%${searchQuery}%`);
-                }
+                if (searchQuery) query = query.ilike('tags', `%${searchQuery}%`);
 
                 const { data, error } = await query;
                 if (error) {
-                    galleryGrid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--danger-red);">Hata: ${error.message}</p>`;
+                    addLog('Veri çekme hatası: ' + error.message, 'error');
                     return;
                 }
 
@@ -526,7 +703,6 @@
 
                     const card = document.createElement('div');
                     card.className = 'media-card';
-                    
                     const deleteBtnDisplay = isAdminActive ? 'flex' : 'none';
 
                     card.innerHTML = `
@@ -538,8 +714,9 @@
                     `;
                     galleryGrid.appendChild(card);
                 });
+                addLog('Galeri verileri başarıyla senkronize edildi.', 'info');
             } catch (err) {
-                galleryGrid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--danger-red);">Sistem Hatası: ${err.message}</p>`;
+                addLog('Fetch Hatası: ' + err.message, 'error');
             }
         }
 
@@ -548,131 +725,39 @@
         }
 
         // ==========================================
-        // 4. RESİM SİLME İŞLEMLERİ
+        // 6. RESİM SİLME AKSİYONLARI
         // ==========================================
         window.deleteSingleImage = async function(id) {
             if (!confirm('Bu görseli galeriden kalıcı olarak silmek istediğinize emin misiniz?')) return;
             try {
                 const { error } = await knglSupaClient.from('gallery_images').delete().eq('id', id);
-                if (error) alert('Silme hatası: ' + error.message);
-                else fetchImages();
+                if (error) addLog('Silme hatası: ' + error.message, 'error');
+                else { addLog(`ID: ${id} olan görsel başarıyla silindi.`, 'success'); fetchImages(); }
             } catch (err) {
-                alert('Silme esnasında hata oluştu: ' + err.message);
+                addLog('Silme esnasında hata: ' + err.message, 'error');
             }
         };
 
         if (deleteAllBtn) {
             deleteAllBtn.addEventListener('click', async function() {
                 if (!confirm('DİKKAT: Galerideki TÜM resimler kalıcı olarak silinecek!')) return;
-                if (!confirm('Son onay: Tabloyu tamamen sıfırlamak istediğinize emin misiniz?')) return;
+                if (!confirm('Son onay: Emin misiniz?')) return;
 
                 try {
                     const { error } = await knglSupaClient.from('gallery_images').delete().gt('id', 0);
-                    if (error) alert('Toplu silme hatası: ' + error.message);
-                    else { alert('Galeri tamamen temizlendi.'); fetchImages(); }
-                } catch (err) {
-                    alert('Beklenmedik Hata: ' + err.message);
-                }
-            });
-        }
-
-        // ==========================================
-        // 5. MEDYA YÜKLEME VE KART OLUŞTURMA
-        // ==========================================
-        if (dropZone) {
-            dropZone.addEventListener('click', () => fileInput && fileInput.click());
-            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                if (e.dataTransfer && e.dataTransfer.files.length) {
-                    selectedFile = e.dataTransfer.files[0];
-                    if (dropZoneText) {
-                        dropZoneText.innerText = `Seçilen: ${selectedFile.name}`;
-                        dropZoneText.style.color = 'var(--accent-green)';
-                    }
-                }
-            });
-        }
-
-        if (fileInput) {
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files && e.target.files.length) {
-                    selectedFile = e.target.files[0];
-                    if (dropZoneText) {
-                        dropZoneText.innerText = `Seçilen: ${selectedFile.name}`;
-                        dropZoneText.style.color = 'var(--accent-green)';
-                    }
-                }
-            });
-        }
-
-        if (uploadBtn) {
-            uploadBtn.addEventListener('click', async () => {
-                const linkInput = document.getElementById('linkInput').value;
-                const tags = document.getElementById('tagInput').value;
-                const statusText = document.getElementById('uploadStatus');
-                
-                if (!knglSupaClient) return alert('Veritabanı bağlantısı yok.');
-                if (!tags) return alert('Lütfen etiketleri (tag) girin.');
-                if (!selectedFile && !linkInput) return alert('Dosya yükleyin veya bir URL adresi girin.');
-
-                statusText.style.color = 'var(--text-white)';
-                statusText.innerText = "Bulut sunucusuna işleniyor...";
-                
-                let finalImageUrl = linkInput;
-
-                try {
-                    if (selectedFile) {
-                        const fileExt = selectedFile.name.split('.').pop();
-                        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-                        
-                        const { error: uploadError } = await knglSupaClient.storage
-                            .from('gallery')
-                            .upload(fileName, selectedFile);
-                            
-                        if (uploadError) {
-                            statusText.style.color = 'var(--danger-red)';
-                            statusText.innerText = 'Storage Hatası: ' + uploadError.message;
-                            return;
-                        }
-
-                        const { data } = knglSupaClient.storage.from('gallery').getPublicUrl(fileName);
-                        finalImageUrl = data.publicUrl;
-                    }
-
-                    const { error: dbError } = await knglSupaClient.from('gallery_images').insert([
-                        { image_url: finalImageUrl, tags: tags }
-                    ]);
-
-                    if (dbError) {
-                        statusText.style.color = 'var(--danger-red)';
-                        statusText.innerText = 'Database Kayıt Hatası: ' + dbError.message;
-                    } else {
-                        statusText.style.color = 'var(--accent-green)';
-                        statusText.innerText = 'Medya başarıyla sisteme yüklendi!';
-                        
-                        document.getElementById('linkInput').value = '';
-                        document.getElementById('tagInput').value = '';
-                        selectedFile = null;
-                        if (dropZoneText) {
-                            dropZoneText.innerText = 'Görsel sürükleyin veya tıklayıp dosyadan seçin';
-                            dropZoneText.style.color = 'var(--text-gray)';
-                        }
-                        if (fileInput) fileInput.value = '';
-                        
-                        setTimeout(() => { if (statusText) statusText.innerText = ''; }, 4000);
+                    if (error) addLog('Toplu silme hatası: ' + error.message, 'error');
+                    else { 
+                        addLog('Tüm galeri veritabanından tamamen temizlendi!', 'success'); 
+                        uploadModal.style.display = 'none';
                         fetchImages(); 
                     }
                 } catch (err) {
-                    statusText.style.color = 'var(--danger-red)';
-                    statusText.innerText = 'Hata: ' + err.message;
+                    addLog('Toplu temizleme hatası: ' + err.message, 'error');
                 }
             });
         }
 
-        // Başlangıç tetiklemesi
+        // İlk Tetikleme
         fetchImages();
     </script>
 </body>
