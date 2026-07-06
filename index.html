@@ -299,19 +299,22 @@
     </div>
 
     <script>
-       // --- 1. CONFIG (SADECE BURAYI DEĞİŞTİR) ---
-const SUPABASE_URL = 'https://rqtlwqphwfjlysnwkpel.supabase.co'; // Kendi URL'ni buraya yapıştır
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxdGx3cXBod2ZqbHlzbndrcGVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDEyNzIsImV4cCI6MjA5ODkxNzI3Mn0.0Xx7BJe0O5VB5uZIZL8LCqOMTTWvSBnGKtGTY6kQGpY'; // Kendi Anon Key'ini buraya yapıştır
-
-// --- GERİ KALANINA DOKUNMANA GEREK YOK ---
-let supabase = null;
-try {
-    if (window.supabase && SUPABASE_URL && !SUPABASE_URL.includes('SENIN_SUPABASE_URL_BURAYA')) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    }
-} catch(e) {
-    console.error("Supabase yüklenemedi:", e);
-}
+        // ==========================================
+        // 1. SUPABASE BİLGİLERİNİ SADECE BURAYA YAZ:
+        // ==========================================
+        const SUPABASE_URL = 'https://rqtlwqphwfjlysnwkpel.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxdGx3cXBod2ZqbHlzbndrcGVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDEyNzIsImV4cCI6MjA5ODkxNzI3Mn0.0Xx7BJe0O5VB5uZIZL8LCqOMTTWvSBnGKtGTY6kQGpY';
+        
+        let supabase = null;
+        
+        // Supabase bağlantısını tamamen izole ve hatasız kuruyoruz
+        try {
+            if (window.supabase && SUPABASE_URL && SUPABASE_URL.indexOf('http') === 0) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch(e) {
+            console.log("Supabase initialization bypassed or failed, waiting for token.");
+        }
 
         // Elementler
         const galleryGrid = document.getElementById('galleryGrid');
@@ -323,28 +326,29 @@ try {
         const fileInput = document.getElementById('fileInput');
         let selectedFile = null;
 
-        // --- 2. GİZLİ KLAVYE DİNLEYİCİSİ (YENİ SİSTEM) ---
-        let inputBuffer = "";
+        // ==========================================
+        // 2. GİZLİ ŞİFRE DİNLEYİCİSİ (ASLA ÇÖKMEZ)
+        // ==========================================
+        let typedKeys = "";
         window.addEventListener('keydown', function(e) {
-            // Eğer kullanıcı arama kutusuna yazı yazıyorsa gizli şifreyi tetiklemesin
-            if (document.activeElement === searchInput || document.activeElement.tagName === 'INPUT') {
+            // Eğer kullanıcı bir arama girdisi yapıyorsa şifreyi tetiklemesin
+            if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
                 return;
             }
             
-            // Basılan tuşu ekle
-            inputBuffer += e.key;
+            typedKeys += e.key;
             
-            // Sadece son 10 karakteri hafızada tut
-            if (inputBuffer.length > 20) {
-                inputBuffer = inputBuffer.substring(inputBuffer.length - 10);
+            // Hafızayı şişirmemek için son 15 karakteri koru
+            if (typedKeys.length > 20) {
+                typedKeys = typedKeys.slice(-15);
             }
             
-            // Eğer yazılan kelime şifreye eşitse paneli aç
-            if (inputBuffer.includes("nieves1312")) {
+            // Ekranda hiçbir şeye tıklamadan direkt yazıldığında algılar
+            if (typedKeys.indexOf("nieves1312") !== -1) {
                 uploadSection.style.display = 'block';
                 logoutBtn.style.display = 'inline-block';
                 uploadSection.scrollIntoView({ behavior: 'smooth' });
-                inputBuffer = ""; // temizle
+                typedKeys = ""; // Sıfırla
             }
         });
 
@@ -354,134 +358,165 @@ try {
             logoutBtn.style.display = 'none';
         });
 
-        // --- 3. VERİ ÇEKME SİSTEMİ ---
+        // ==========================================
+        // 3. GALERİ VERİLERİNİ ÇEKME FONKSİYONU
+        // ==========================================
         async function fetchImages(searchQuery = '') {
+            if (!galleryGrid) return;
             galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-gray);">Veriler senkronize ediliyor...</p>';
             
             if (!supabase) {
-                galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--danger-red);">Supabase URL ve Key eksik ya da hatalı!</p>';
+                galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--danger-red);">Supabase URL ve Key eksik veya koddaki yerlerine doğru yapıştırılmadı!</p>';
                 return;
             }
 
-            let query = supabase.from('gallery_images').select('*').order('created_at', { ascending: false });
-            
-            if (searchQuery) {
-                query = query.ilike('tags', `%${searchQuery}%`);
-            }
-
-            const { data, error } = await query;
-
-            if (error) {
-                galleryGrid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--danger-red);">Veri Hatası: ${error.message}</p>`;
-                return;
-            }
-
-            galleryGrid.innerHTML = '';
-            
-            if (!data || data.length === 0) {
-                galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-gray);">Gösterilebilecek medya kaydı bulunamadı.</p>';
-                return;
-            }
-
-            data.forEach(item => {
-                const tagsHtml = item.tags.split(',')
-                    .map(t => t.trim() ? `<span class="tag">#${t.trim()}</span>` : '')
-                    .join('');
-
-                const card = document.createElement('div');
-                card.className = 'media-card';
-                card.innerHTML = `
-                    <div class="img-container">
-                        <img src="${item.image_url}" alt="KNGLRP Media" loading="lazy">
-                    </div>
-                    <div class="card-footer">${tagsHtml}</div>
-                `;
-                galleryGrid.appendChild(card);
-            });
-        }
-
-        searchInput.addEventListener('input', (e) => fetchImages(e.target.value));
-
-        // --- 4. SÜRÜKLE BIRAK MEDYA SEÇİMİ ---
-        dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                selectedFile = e.dataTransfer.files[0];
-                dropZoneText.innerText = `Seçilen: ${selectedFile.name}`;
-                dropZoneText.style.color = 'var(--accent-green)';
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                selectedFile = e.target.files[0];
-                dropZoneText.innerText = `Seçilen: ${selectedFile.name}`;
-                dropZoneText.style.color = 'var(--accent-green)';
-            }
-        });
-
-        // --- 5. MEDYA YÜKLEME VE DATABASE KAYIT ---
-        document.getElementById('uploadBtn').addEventListener('click', async () => {
-            const linkInput = document.getElementById('linkInput').value;
-            const tags = document.getElementById('tagInput').value;
-            const statusText = document.getElementById('uploadStatus');
-            
-            if (!supabase) return alert('Veritabanı bağlantısı yok.');
-            if (!tags) return alert('Lütfen arama filtreleri için tag girin.');
-            if (!selectedFile && !linkInput) return alert('Bir dosya seçin veya medya URL adresi girin.');
-
-            statusText.style.color = 'var(--text-white)';
-            statusText.innerText = "Bulut sunucusuna işleniyor...";
-            
-            let finalImageUrl = linkInput;
-
-            if (selectedFile) {
-                const fileExt = selectedFile.name.split('.').pop();
-                const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            try {
+                let query = supabase.from('gallery_images').select('*').order('created_at', { ascending: false });
                 
-                const { error: uploadError } = await supabase.storage
-                    .from('gallery')
-                    .upload(fileName, selectedFile);
-                    
-                if (uploadError) {
-                    statusText.style.color = 'var(--danger-red)';
-                    statusText.innerText = 'Storage Upload Hatası: ' + uploadError.message;
+                if (searchQuery) {
+                    query = query.ilike('tags', `%${searchQuery}%`);
+                }
+
+                const { data, error } = await query;
+
+                if (error) {
+                    galleryGrid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--danger-red);">Veri Hatası: ${error.message}</p>`;
                     return;
                 }
 
-                const { data } = supabase.storage.from('gallery').getPublicUrl(fileName);
-                finalImageUrl = data.publicUrl;
-            }
-
-            const { error: dbError } = await supabase.from('gallery_images').insert([
-                { image_url: finalImageUrl, tags: tags }
-            ]);
-
-            if (dbError) {
-                statusText.style.color = 'var(--danger-red)';
-                statusText.innerText = 'Database Kayıt Hatası: ' + dbError.message;
-            } else {
-                statusText.style.color = 'var(--accent-green)';
-                statusText.innerText = 'Medyalar başarıyla KNGLRP ağına yüklendi!';
+                galleryGrid.innerHTML = '';
                 
-                // Formu sıfırla
-                document.getElementById('linkInput').value = '';
-                document.getElementById('tagInput').value = '';
-                selectedFile = null;
-                dropZoneText.innerText = 'Görsel sürükleyin veya tıklayıp dosyadan seçin';
-                dropZoneText.style.color = 'var(--text-gray)';
-                fileInput.value = '';
-                
-                setTimeout(() => statusText.innerText = '', 4000);
-                fetchImages(); 
-            }
-        });
+                if (!data || data.length === 0) {
+                    galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-gray);">Gösterilebilecek medya kaydı bulunamadı.</p>';
+                    return;
+                }
 
-        // İlk veri çekme tetiklemesi
+                data.forEach(item => {
+                    const tagsHtml = (item.tags || '').split(',')
+                        .map(t => t.trim() ? `<span class="tag">#${t.trim()}</span>` : '')
+                        .join('');
+
+                    const card = document.createElement('div');
+                    card.className = 'media-card';
+                    card.innerHTML = `
+                        <div class="img-container">
+                            <img src="${item.image_url}" alt="KNGLRP Media" loading="lazy">
+                        </div>
+                        <div class="card-footer">${tagsHtml}</div>
+                    `;
+                    galleryGrid.appendChild(card);
+                });
+            } catch (err) {
+                galleryGrid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--danger-red);">Sistemsel Hata: ${err.message}</p>`;
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => fetchImages(e.target.value));
+        }
+
+        // ==========================================
+        // 4. DOSYA SEÇME VE DOSYA SÜRÜKLEME İŞLEMLERİ
+        // ==========================================
+        if (dropZone) {
+            dropZone.addEventListener('click', () => fileInput && fileInput.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer && e.dataTransfer.files.length) {
+                    selectedFile = e.dataTransfer.files[0];
+                    if (dropZoneText) {
+                        dropZoneText.innerText = `Seçilen: ${selectedFile.name}`;
+                        dropZoneText.style.color = 'var(--accent-green)';
+                    }
+                }
+            });
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length) {
+                    selectedFile = e.target.files[0];
+                    if (dropZoneText) {
+                        dropZoneText.innerText = `Seçilen: ${selectedFile.name}`;
+                        dropZoneText.style.color = 'var(--accent-green)';
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // 5. MEDYA YÜKLEME VE KAYIT ETME SİSTEMİ
+        // ==========================================
+        const uploadBtn = document.getElementById('uploadBtn');
+        if (uploadBtn) {
+            uploadBtn.addEventListener('click', async () => {
+                const linkInput = document.getElementById('linkInput').value;
+                const tags = document.getElementById('tagInput').value;
+                const statusText = document.getElementById('uploadStatus');
+                
+                if (!supabase) return alert('Veritabanı bağlantısı kurulmadı.');
+                if (!tags) return alert('Lütfen arama filtreleri için tag girin.');
+                if (!selectedFile && !linkInput) return alert('Bir dosya seçin veya medya URL adresi girin.');
+
+                statusText.style.color = 'var(--text-white)';
+                statusText.innerText = "Bulut sunucusuna işleniyor...";
+                
+                let finalImageUrl = linkInput;
+
+                try {
+                    if (selectedFile) {
+                        const fileExt = selectedFile.name.split('.').pop();
+                        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                        
+                        const { error: uploadError } = await supabase.storage
+                            .from('gallery')
+                            .upload(fileName, selectedFile);
+                            
+                        if (uploadError) {
+                            statusText.style.color = 'var(--danger-red)';
+                            statusText.innerText = 'Storage Upload Hatası: ' + uploadError.message;
+                            return;
+                        }
+
+                        const { data } = supabase.storage.from('gallery').getPublicUrl(fileName);
+                        finalImageUrl = data.publicUrl;
+                    }
+
+                    const { error: dbError } = await supabase.from('gallery_images').insert([
+                        { image_url: finalImageUrl, tags: tags }
+                    ]);
+
+                    if (dbError) {
+                        statusText.style.color = 'var(--danger-red)';
+                        statusText.innerText = 'Database Kayıt Hatası: ' + dbError.message;
+                    } else {
+                        statusText.style.color = 'var(--accent-green)';
+                        statusText.innerText = 'Medyalar başarıyla KNGLRP ağına yüklendi!';
+                        
+                        // Formu sıfırla
+                        document.getElementById('linkInput').value = '';
+                        document.getElementById('tagInput').value = '';
+                        selectedFile = null;
+                        if (dropZoneText) {
+                            dropZoneText.innerText = 'Görsel sürükleyin veya tıklayıp dosyadan seçin';
+                            dropZoneText.style.color = 'var(--text-gray)';
+                        }
+                        if (fileInput) fileInput.value = '';
+                        
+                        setTimeout(() => { if (statusText) statusText.innerText = ''; }, 4000);
+                        fetchImages(); 
+                    }
+                } catch (err) {
+                    statusText.style.color = 'var(--danger-red)';
+                    statusText.innerText = 'Beklenmedik Hata: ' + err.message;
+                }
+            });
+        }
+
+        // İlk tetikleme
         fetchImages();
     </script>
 </body>
