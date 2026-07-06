@@ -1001,66 +1001,6 @@
         }
 
         fetchImages();
-
-// ==========================================
-    // 3. ADMIN MODU VE TOPLU SİLME TETİKLEYİCİLERİ
-    // ==========================================
-    if(adminToggleBtn) {
-        adminToggleBtn.onclick = () => {
-            isAdminActive = !isAdminActive;
-            adminToggleBtn.textContent = isAdminActive ? "Admin Modu: AKTİF" : "Admin Modu: KAPALI";
-            adminToggleBtn.classList.toggle('active', isAdminActive);
-            syncAdminUIWithCards();
-            updateBulkDeleteButtonUI();
-        };
-    }
-
-    function syncAdminUIWithCards() {
-        const checkboxes = document.querySelectorAll('.card-checkbox');
-        checkboxes.forEach(cb => {
-            cb.style.display = isAdminActive ? 'block' : 'none';
-            if (!isAdminActive) {
-                cb.checked = false;
-                cb.closest('.media-card').classList.remove('selected');
-            }
-        });
-    }
-
-    function updateBulkDeleteButtonUI() {
-        const selectedCount = document.querySelectorAll('.card-checkbox:checked').length;
-        if(bulkDeleteBtn) {
-            bulkDeleteBtn.textContent = `Seçilenleri Sil (${selectedCount})`;
-            bulkDeleteBtn.style.display = (isAdminActive && selectedCount > 0) ? 'block' : 'none';
-        }
-    }
-
-    if(bulkDeleteBtn) {
-        bulkDeleteBtn.onclick = async () => {
-            const checkedBoxes = document.querySelectorAll('.card-checkbox:checked');
-            if(checkedBoxes.length === 0) return;
-
-            if(!confirm(`Seçtiğiniz ${checkedBoxes.length} adet görseli silmek istiyor musunuz?`)) return;
-
-            const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
-            addLog(`${idsToDelete.length} adet görsel kaldırılıyor...`, 'info');
-
-            const { error } = await supabase.from('gallery_images').delete().in('id', idsToDelete);
-
-            if(error) {
-                addLog(`Hata: ${error.message}`, 'error');
-            } else {
-                addLog('Görseller başarıyla silindi.', 'success');
-                idsToDelete.forEach(id => {
-                    const cardToRemove = document.querySelector(`.media-card[data-id="${id}"]`);
-                    if (cardToRemove) cardToRemove.remove();
-                });
-                allGalleryData = allGalleryData.filter(item => !idsToDelete.includes(item.id.toString()));
-                filteredData = filteredData.filter(item => !idsToDelete.includes(item.id.toString()));
-                displayedCount -= idsToDelete.length;
-                updateBulkDeleteButtonUI();
-            }
-        };
-    }
         
     </script>
 </body>
