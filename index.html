@@ -994,56 +994,85 @@
 
 let currentPage = 1;
 const itemsPerPage = 50;
-let allGalleryData = []; // Veritabanından gelen orijinal veri
-let filteredData = [];   // Arama sonrası oluşan veri
+let allGalleryData = [];
+let filteredData = [];
 
-// 1. Veriyi Çek ve Başlat
+// 1. Veriyi çek ve başlangıç ayarlarını yap
 async function fetchAndRender() {
-    const { data } = await supabase.from('gallery_images').select('*').order('created_at', { ascending: false });
+    // galleryGrid elemanının varlığını kontrol et
+    const galleryGrid = document.getElementById('galleryGrid');
+    if (!galleryGrid) {
+        console.error("HATA: 'galleryGrid' ID'li bir HTML elemanı bulunamadı!");
+        return;
+    }
+
+    const { data, error } = await supabase.from('gallery_images').select('*').order('created_at', { ascending: false });
+    
+    if (error) {
+        console.error("Supabase Veri Hatası:", error);
+        return;
+    }
+
     allGalleryData = data || [];
-    filteredData = [...allGalleryData]; // Başlangıçta tümü gösterilir
+    filteredData = [...allGalleryData];
     renderGallery();
 }
 
 // 2. Arama Sistemi
-document.getElementById('searchInput').addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase();
-    filteredData = allGalleryData.filter(item => item.tags.toLowerCase().includes(term));
-    currentPage = 1; // Aramada 1. sayfaya dön
-    renderGallery();
-});
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        filteredData = allGalleryData.filter(item => 
+            (item.tags && item.tags.toLowerCase().includes(term))
+        );
+        currentPage = 1;
+        renderGallery();
+    });
+}
 
-// 3. Galeriyi Çiz
+// 3. Galeriyi Çiz (Ana Fonksiyon)
 function renderGallery() {
     const galleryGrid = document.getElementById('galleryGrid');
-    galleryGrid.style.opacity = 0;
-    
-    setTimeout(() => {
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        const paginatedData = filteredData.slice(start, end);
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const paginatedData = filteredData.slice(start, end);
 
-        galleryGrid.innerHTML = paginatedData.length ? '' : '<p style="grid-column:1/-1; text-align:center;">Görsel bulunamadı.</p>';
-        
+    galleryGrid.innerHTML = ''; // İçeriği temizle
+    
+    if (paginatedData.length === 0) {
+        galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:white;">Görsel bulunamadı.</p>';
+    } else {
         paginatedData.forEach(item => {
             const card = document.createElement('div');
             card.className = 'media-card';
-            card.innerHTML = `<img src="${item.image_url}" style="width:100%; height:150px; object-fit:cover; border-radius:8px;">`;
+            card.innerHTML = `<img src="${item.image_url}" style="width:100%; height:150px; object-fit:cover; border-radius:8px; cursor:pointer;" onclick="openLightbox('${item.image_url}')">`;
             galleryGrid.appendChild(card);
         });
-        galleryGrid.style.opacity = 1;
-        updatePaginationUI();
-    }, 300);
+    }
+    
+    updatePaginationUI();
 }
 
-// 4. Sayfalama UI (Butonlar ve Sayılar)
+// 4. Sayfalama Kontrolleri
 function updatePaginationUI() {
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    let pagContainer = document.getElementById('paginationArea') || createPaginationContainer();
+    let pagContainer = document.getElementById('paginationArea');
     
+    // Eğer paginationArea HTML'de yoksa, otomatik oluştur
+    if (!pagContainer) {
+        pagContainer = document.createElement('div');
+        pagContainer.id = 'paginationArea';
+        pagContainer.className = 'pagination-area';
+        document.getElementById('galleryGrid').after(pagContainer);
+    }
+
     let buttons = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(-1)">Önceki</button>`;
     
+    // Sayfa numaralarını göster
     for(let i = 1; i <= totalPages; i++) {
+        // Çok fazla sayfa varsa sadece yakınları göster (opsiyonel)
+        if (i > 5 && i < totalPages) continue; 
         buttons += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
     }
     
@@ -1051,17 +1080,10 @@ function updatePaginationUI() {
     pagContainer.innerHTML = buttons;
 }
 
-function changePage(dir) { currentPage += dir; renderGallery(); }
-function goToPage(p) { currentPage = p; renderGallery(); }
+function changePage(dir) { currentPage += dir; renderGallery(); window.scrollTo(0, 0); }
+function goToPage(p) { currentPage = p; renderGallery(); window.scrollTo(0, 0); }
 
-function createPaginationContainer() {
-    const div = document.createElement('div');
-    div.id = 'paginationArea';
-    div.className = 'pagination-area';
-    document.body.appendChild(div);
-    return div;
-}
-
+// Başlat
 fetchAndRender();
     </script>
 </body>
