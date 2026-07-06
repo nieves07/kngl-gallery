@@ -179,13 +179,12 @@
             box-shadow: 0 0 30px rgba(0, 255, 135, 0.1);
         }
 
-        /* Düzenlenen ve Çakışması Engellenen Modal Üst Alanı */
         .modal-header-area {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
-            padding-right: 40px; /* Çarpı butonuna güvenli alan bırakır */
+            padding-right: 40px; 
         }
 
         .modal-content h2 {
@@ -394,7 +393,6 @@
             transform: scale(1.1);
         }
 
-        /* Toplu Seçim Checkbox Kutusu */
         .card-select-checkbox {
             position: absolute;
             top: 16px; left: 16px;
@@ -407,7 +405,7 @@
             border-radius: 6px;
         }
 
-        /* --- LIGHTBOX (BÜYÜK RESİM ÖNİZLEME) --- */
+        /* --- LIGHTBOX --- */
         .lightbox-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -434,7 +432,7 @@
             object-fit: contain;
         }
 
-        /* --- AÇILIR/KAPANIR SİSTEM LOG PANELİ --- */
+        /* --- AÇILIR/KAPANIR LOG PANELİ --- */
         .live-logger-panel {
             position: fixed;
             bottom: 20px;
@@ -595,7 +593,7 @@
 
     <script>
         // ==========================================
-        // 1. SUPABASE AYARLARI
+        // 1. SUPABASE AYARLARI (BURAYI GÜNCELLEMEYİ UNUTMA)
         // ==========================================
         const MY_SUPABASE_TARGET_URL = 'https://rqtlwqphwfjlysnwkpel.supabase.co';
         const MY_SUPABASE_TARGET_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxdGx3cXBod2ZqbHlzbndrcGVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDEyNzIsImV4cCI6MjA5ODkxNzI3Mn0.0Xx7BJe0O5VB5uZIZL8LCqOMTTWvSBnGKtGTY6kQGpY';
@@ -603,7 +601,7 @@
         let knglSupaClient = null; 
         let isAdminActive = false; 
         let selectedFilesQueue = []; 
-        let globalFetchedData = []; // Veritabanından gelen mevcut resimleri tutar
+        let globalFetchedData = []; 
 
         function addLog(text, type = 'info') {
             const loggerBody = document.getElementById('loggerBody');
@@ -658,7 +656,6 @@
         const loggerHeader = document.getElementById('loggerHeader');
         const loggerToggleBtn = document.getElementById('loggerToggleBtn');
 
-        // Sayfa yüklendiğinde adminlik kontrolü
         if (sessionStorage.getItem('kngl_admin_session') === 'true') {
             isAdminActive = true;
             if (exitAdminModeBtn) exitAdminModeBtn.style.display = 'inline-flex';
@@ -740,12 +737,11 @@
         }
 
         // ==========================================
-        // 5. ASIL DOSYAYI STORAGE'DAN SİLME MANTIĞI
+        // 5. STORAGE'DAN SİLME FONKSİYONU
         // ==========================================
         async function removeFileFromStorage(imageUrl) {
             if (!imageUrl || !imageUrl.includes('/storage/v1/object/public/gallery/')) return true;
             try {
-                // URL'den dosya adını çeker
                 const fileName = imageUrl.split('/gallery/').pop();
                 if (!fileName) return false;
 
@@ -899,13 +895,11 @@
                         <div class="card-footer">${tagsHtml}</div>
                     `;
 
-                    // Checkbox tıklandığında resmin açılmasını engelle
                     card.querySelector('.card-select-checkbox').addEventListener('click', (e) => {
                         e.stopPropagation();
                         updateSelectedCount();
                     });
 
-                    // Tekli Silme Butonu Kontrolü
                     card.querySelector('.delete-card-btn').addEventListener('click', async function(e) {
                         e.stopPropagation();
                         if (!confirm('Bu görseli kalıcı olarak silmek istiyor musunuz?')) return;
@@ -914,11 +908,9 @@
                         const targetItem = globalFetchedData.find(x => x.id == id);
                         
                         if (targetItem) {
-                            // Önce dosyayı depodan (Storage) uçurur
                             await removeFileFromStorage(targetItem.image_url);
                         }
 
-                        // Sonra veri tabanından siler
                         const { error: delErr } = await knglSupaClient.from('gallery_images').delete().eq('id', id);
                         if (delErr) addLog('Silme Hatası: ' + delErr.message, 'error');
                         else { addLog('Görsel başarıyla kaldırıldı.', 'success'); fetchImages(); }
@@ -932,21 +924,18 @@
 
         if (searchInput) searchInput.addEventListener('input', (e) => fetchImages(e.target.value));
 
-        // Onay Kutusu Sayacını Güncelleme
         function updateSelectedCount() {
             const checkedBoxes = document.querySelectorAll('.card-select-checkbox:checked');
             if (deleteSelectedBtn) {
                 deleteSelectedBtn.innerText = `Seçilenleri Sil (${checkedBoxes.length})`;
                 deleteSelectedBtn.style.backgroundColor = checkedBoxes.length > 0 ? 'rgba(255, 74, 74, 0.9)' : 'rgba(255, 74, 74, 0.2)';
-                deleteSelectedBtn.style.color = checkedBoxes.length > 0 ? '#fff' : var(--danger-red);
+                deleteSelectedBtn.style.color = checkedBoxes.length > 0 ? '#fff' : 'var(--danger-red)';
             }
         }
 
         // ==========================================
         // 9. TOPLU VE SEÇEREK SİLME AKSİYONLARI
         // ==========================================
-        
-        // A) Seçilenleri Silme Butonu
         if (deleteSelectedBtn) {
             deleteSelectedBtn.addEventListener('click', async function() {
                 const checkedBoxes = document.querySelectorAll('.card-select-checkbox:checked');
@@ -969,20 +958,17 @@
             });
         }
 
-        // B) Tüm Galeriyi Sıfırlama Butonu
         if (deleteAllBtn) {
             deleteAllBtn.addEventListener('click', async function() {
                 if (!confirm('DİKKAT: Galerideki TÜM resimler ve bulut deposundaki asıl dosyalar kalıcı olarak silinecek!')) return;
-                if (!confirm('Son ve kesin onayınız mı? Bu işlemin geri dönüşü yoktur.')) return;
+                if (!confirm('Son onayınız mı?')) return;
 
                 addLog('Tüm galeri verileri ve depolama alanı temizleniyor...', 'info');
 
-                // Önce depodaki tüm asıl görselleri tek tek tarayıp siler
                 for (let item of globalFetchedData) {
                     await removeFileFromStorage(item.image_url);
                 }
 
-                // Veritabanı tablosunu sıfırlar
                 const { error } = await knglSupaClient.from('gallery_images').delete().gt('id', 0);
                 if (error) addLog('Tablo temizleme hatası: ' + error.message, 'error');
                 else {
@@ -993,7 +979,6 @@
             });
         }
 
-        // Başlangıç Tetikleyicisi
         fetchImages();
     </script>
 </body>
