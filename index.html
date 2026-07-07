@@ -102,9 +102,12 @@
             transition: letter-spacing 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Fare ile üzerine gelindiğinde harflerin premium şekilde açılması */
-        .logo-area h1:hover {
+        /* Fare ile üzerine gelindiğinde harflerin açılması ve hafif opaklık efekti */
+        .logo-area:hover h1 {
             letter-spacing: 1.5px;
+        }
+        .logo-area:hover {
+            opacity: 0.9;
         }
 
         .logo-area h1 span {
@@ -849,7 +852,7 @@
 
     <div class="container">
         <header>
-            <div class="logo-area">
+            <div class="logo-area" onclick="window.open('https://www.instagram.com/cesurdrnn/', '_blank')" style="cursor: pointer;">
                 <div class="logo-status-glow"></div>
                 <h1>KNGLRP <span>Gallery</span></h1>
             </div>
