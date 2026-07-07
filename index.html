@@ -90,6 +90,53 @@
             gap: 16px;
         }
 
+        /* Server Status Widget Tasarımı */
+        .server-status-widget {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            animation: status-pulse 1.8s infinite ease-in-out;
+        }
+
+        @keyframes status-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .status-text {
+            color: var(--text-gray);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .status-count {
+            color: var(--text-white);
+            font-weight: 700;
+        }
+
         input, textarea, select {
             background-color: var(--bg-input);
             border: 1px solid var(--border-color);
@@ -98,7 +145,7 @@
             border-radius: 10px;
             font-size: 14px;
             outline: none;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2; 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         select {
@@ -378,6 +425,7 @@
         }
 
         @media (max-width: 1200px) { .gallery-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 992px) { header { flex-direction: column; align-items: flex-start; } .controls-area { width: 100%; flex-wrap: wrap; } }
         @media (max-width: 900px) { .gallery-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 600px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
 
@@ -401,7 +449,6 @@
             border-color: var(--accent-green);
         }
 
-        /* NEW: Lazy Blur Efekt Alanı */
         .img-container {
             width: 100%;
             height: 100%;
@@ -584,7 +631,6 @@
             transform: none !important;
         }
 
-        /* NEW & UPDATED: Gelişmiş Detay Panelli Lightbox */
         .lightbox-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -629,7 +675,6 @@
             -webkit-user-drag: none;
         }
 
-        /* NEW: Sağ Detay Paneli */
         .lightbox-details-side {
             width: 320px;
             height: 100%;
@@ -794,7 +839,6 @@
         @media (max-width: 768px) {
             .upload-grid { grid-template-columns: 1fr; gap: 20px; }
             .live-logger-panel { width: calc(100% - 40px); left: 20px; right: 20px; }
-            .controls-area { flex-wrap: wrap; }
             #searchInput { width: 100%; }
         }
     </style>
@@ -807,6 +851,11 @@
                 <h1>KNGLRP <span>Gallery</span></h1>
             </div>
             <div class="controls-area">
+                <div class="server-status-widget" id="serverStatusWidget">
+                    <div class="status-dot"></div>
+                    <div class="status-text">FIVEM: <span class="status-count" id="serverPlayerCount">Yükleniyor...</span></div>
+                </div>
+
                 <input type="text" id="searchInput" placeholder="Tag araması yap (Tüm sayfalarda)...">
                 
                 <select id="sortSelect">
@@ -827,7 +876,6 @@
         <div class="pagination-container" id="paginationContainer"></div>
     </div>
 
-    <!-- MODALLAR VE LOG PANELLERİ AYNEN KORUNDU -->
     <div id="passwordModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn" id="closePassModalBtn">&times;</button>
@@ -871,17 +919,14 @@
         </div>
     </div>
 
-    <!-- UPDATED: GELİŞMİŞ LIGHTBOX (DETAY MODLU) -->
     <div id="lightboxOverlay" class="lightbox-overlay">
         <div class="lightbox-wrapper">
             
-            <!-- Sol Taraf: Medya Alanı -->
             <div class="lightbox-media-side">
                 <button class="lightbox-nav-btn lightbox-prev" id="lightboxPrevBtn">‹</button>
                 <img id="lightboxImg" src="" alt="Önizleme" draggable="false">
                 <button class="lightbox-nav-btn lightbox-next" id="lightboxNextBtn">›</button>
 
-                <!-- Üst Aksiyon Çubuğu -->
                 <div class="lightbox-top-actions">
                     <button class="lightbox-action-btn" title="Detay Panelini Aç/Kapat" id="lightboxInfoBtn">
                         <svg viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
@@ -896,7 +941,6 @@
                 </div>
             </div>
 
-            <!-- Sağ Taraf: Detay Paneli -->
             <div class="lightbox-details-side" id="lightboxDetailsSide">
                 <div class="details-title">Görsel Bilgileri</div>
                 
@@ -930,14 +974,15 @@
         // ==========================================
         const MY_SUPABASE_TARGET_URL = 'https://rqtlwqphwfjlysnwkpel.supabase.co';
         const MY_SUPABASE_TARGET_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxdGx3cXBod2ZqbHlzbndrcGVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNDEyNzIsImV4cCI6MjA5ODkxNzI3Mn0.0Xx7BJe0O5VB5uZIZL8LCqOMTTWvSBnGKtGTY6kQGpY';
-        
+        const FIVE_M_SERVER_CODE = '5oy4vxd'; // https://cfx.re/join/5oy4vxd adresinden alınan benzersiz kod
+
         let knglSupaClient = null; 
         let isAdminActive = false; 
         let selectedFilesQueue = []; 
         let allGalleryData = []; 
         let filteredData = [];   
         let currentPage = 1;
-        const itemsPerPage = 50;
+        const itemsPerPage = 20; // Her sayfada 20 görsel listeleme kuralı
         let currentLightboxIndex = -1;
 
         function addLog(text, type = 'info') {
@@ -1021,7 +1066,38 @@
         }
 
         // ==========================================
-        // KOPYALAMA VE İNDİRME MOTORU
+        // 2. CANLI FIVEM SUNUCU DURUMU MOTORU
+        // ==========================================
+        async function updateFiveMServerStatus() {
+            const countElement = document.getElementById('serverPlayerCount');
+            if (!countElement || !FIVE_M_SERVER_CODE) return;
+
+            try {
+                // FiveM resmi API endpoint'i (CORS destekli)
+                const response = await fetch(`https://servers-api.fivem.net/v1/servers/code/${FIVE_M_SERVER_CODE}`);
+                if (!response.ok) throw new Error();
+                
+                const resData = await response.json();
+                if (resData && resData.Data) {
+                    const currentPlayers = resData.Data.clients || 0;
+                    const maxPlayers = resData.Data.sv_maxclients || 128;
+                    
+                    countElement.innerText = `${currentPlayers}/${maxPlayers} OYUNCU`;
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                countElement.innerText = "BAĞLANTI YOK";
+                addLog("FiveM API sunucu durumunu güncelleyemedi.", "warn");
+            }
+        }
+
+        // Sunucu durumunu hemen çalıştır ve her 30 saniyede bir güncelle
+        updateFiveMServerStatus();
+        setInterval(updateFiveMServerStatus, 30000);
+
+        // ==========================================
+        // 3. KOPYALAMA VE İNDİRME MOTORU
         // ==========================================
         window.copyImageLink = function(e, url) {
             if (e) e.stopPropagation(); 
@@ -1051,7 +1127,7 @@
         };
 
         // ==========================================
-        // LIGHTBOX DETAY VE NAVİGASYON MOTORU
+        // 4. LIGHTBOX DETAY VE NAVİGASYON MOTORU
         // ==========================================
         window.openLightbox = function(url) {
             if (!url) return;
@@ -1066,7 +1142,6 @@
             
             lightboxImg.src = currentItem.image_url;
 
-            // Detayları Panele Yazma
             if (currentItem.created_at) {
                 const dateObj = new Date(currentItem.created_at);
                 detailDate.innerText = dateObj.toLocaleDateString('tr-TR') + ' ' + dateObj.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
@@ -1092,7 +1167,6 @@
             updateLightboxContent();
         }
 
-        // Info / Detay Panel Aç-Kapat Tetikleyici
         if (lightboxInfoBtn) {
             lightboxInfoBtn.addEventListener('click', () => {
                 lightboxDetailsSide.classList.toggle('collapsed');
@@ -1127,7 +1201,7 @@
         });
 
         // ==========================================
-        // LAZY BLUR TETİKLEYİCİ FONKSİYON
+        // 5. LAZY BLUR TETİKLEYİCİ FONKSİYON
         // ==========================================
         window.triggerLazyBlur = function(imgElement) {
             if (imgElement.complete) {
@@ -1142,7 +1216,7 @@
         };
 
         // ==========================================
-        // YÖNETİCİ PANELİ GİRİŞ / ÇIKIŞ İŞLEMLERİ
+        // 6. YÖNETİCİ PANELİ GİRİŞ / ÇIKIŞ İŞLEMLERİ
         // ==========================================
         if (mainActionBtn) {
             mainActionBtn.addEventListener('click', function() {
@@ -1192,7 +1266,6 @@
             });
         }
 
-        // Storage Silme
         async function removeFileFromStorage(imageUrl) {
             if (!imageUrl || !imageUrl.includes('/storage/v1/object/public/gallery/')) return true;
             try {
@@ -1204,7 +1277,7 @@
         }
 
         // ==========================================
-        // GÖRSEL DOSYA ÖNİZLEME VE DOSYA SÜRÜKLEME
+        // 7. GÖRSEL DOSYA ÖNİZLEME VE DOSYA SÜRÜKLEME
         // ==========================================
         function handleFilesSelection(files) {
             for (let i = 0; i < files.length; i++) {
@@ -1270,7 +1343,7 @@
         }
 
         // ==========================================
-        // VERİ TABANINA GÖRSEL GÖNDERME MOTORU
+        // 8. VERI TABANINA GÖRSEL GÖNDERME MOTORU
         // ==========================================
         if (uploadBtn) {
             uploadBtn.addEventListener('click', async () => {
@@ -1324,7 +1397,7 @@
         }
 
         // ==========================================
-        // VERİLERİ ÇEKME, FİLTRELEME VE YENİLEME
+        // 9. VERİLERİ ÇEKME, FİLTRELEME VE YENİLEME
         // ==========================================
         async function fetchGalleryData() {
             if (!galleryGrid || !knglSupaClient) return;
@@ -1401,7 +1474,6 @@
                     </div>
 
                     <div class="img-container">
-                        <!-- LAZY BLUR: onload tetikleyicisi entegre edildi -->
                         <img src="${item.image_url}" alt="KNGLRP Media" onload="triggerLazyBlur(this)">
                         <div class="card-tags-overlay" style="${isAdminActive ? 'display:none;' : (currentTags.trim() ? 'display:flex;' : 'display:none;')}">
                             ${tagsHtml}
@@ -1448,7 +1520,6 @@
 
                 galleryGrid.appendChild(card);
                 
-                // Manuel kontrol tetikleme
                 const img = card.querySelector('.img-container img');
                 triggerLazyBlur(img);
             });
@@ -1462,27 +1533,24 @@
             paginationContainer.innerHTML = '';
             if (totalPages <= 1) return;
 
+            // Önceki Butonu
             const prevBtn = document.createElement('button');
-            prevBtn.className = 'pagination-btn'; prevBtn.innerText = '«'; prevBtn.disabled = currentPage === 1;
+            prevBtn.className = 'pagination-btn'; prevBtn.innerText = 'Önceki'; prevBtn.disabled = currentPage === 1;
             prevBtn.addEventListener('click', () => { currentPage--; refreshGalleryUI(); window.scrollTo(0,0); });
             paginationContainer.appendChild(prevBtn);
 
-            for (let i = 1; i <= totalPages; i++) {
-                if (totalPages > 6 && Math.abs(currentPage - i) > 2 && i !== 1 && i !== totalPages) {
-                    if (i === 2 || i === totalPages - 1) {
-                        const dots = document.createElement('span'); dots.innerText = '...'; dots.style.color = 'var(--text-gray)'; dots.style.padding = '0 5px';
-                        paginationContainer.appendChild(dots);
-                    }
-                    continue;
-                }
-                const pageBtn = document.createElement('button');
-                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`; pageBtn.innerText = i;
-                pageBtn.addEventListener('click', () => { currentPage = i; refreshGalleryUI(); window.scrollTo(0,0); });
-                paginationContainer.appendChild(pageBtn);
-            }
+            // Sayfa Durum Metni (Kaç sayfa olduğunu ve ortadaki güncel konumu gösterme kuralı)
+            const infoSpan = document.createElement('span');
+            infoSpan.style.color = 'var(--text-gray)';
+            infoSpan.style.fontSize = '14px';
+            infoSpan.style.fontWeight = '600';
+            infoSpan.style.padding = '0 10px';
+            infoSpan.innerText = `${currentPage} / ${totalPages}`;
+            paginationContainer.appendChild(infoSpan);
 
+            // Sonraki Butonu
             const nextBtn = document.createElement('button');
-            nextBtn.className = 'pagination-btn'; nextBtn.innerText = '»'; nextBtn.disabled = currentPage === totalPages;
+            nextBtn.className = 'pagination-btn'; nextBtn.innerText = 'Sonraki'; nextBtn.disabled = currentPage === totalPages;
             nextBtn.addEventListener('click', () => { currentPage++; refreshGalleryUI(); window.scrollTo(0,0); });
             paginationContainer.appendChild(nextBtn);
         }
