@@ -98,7 +98,7 @@
             border-radius: 10px;
             font-size: 14px;
             outline: none;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2; 1);
         }
 
         select {
@@ -123,9 +123,7 @@
             box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        #searchInput {
-            width: 260px;
-        }
+        #searchInput { width: 260px; }
 
         button {
             background-color: var(--accent-green);
@@ -252,8 +250,7 @@
 
         .modal-close-btn {
             position: absolute;
-            top: 28px; 
-            right: 28px;
+            top: 28px; right: 28px;
             background: transparent;
             border: none;
             color: var(--text-gray);
@@ -272,11 +269,7 @@
             align-items: start;
         }
 
-        .form-left {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .form-left { display: flex; flex-direction: column; gap: 16px; }
 
         .drop-zone {
             border: 2px dashed var(--border-color);
@@ -312,11 +305,7 @@
             padding: 14px;
         }
 
-        .preview-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .preview-container { display: flex; flex-direction: column; gap: 10px; }
 
         .preview-row {
             display: flex;
@@ -339,11 +328,7 @@
             flex-shrink: 0;
         }
 
-        .preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .preview-item img { width: 100%; height: 100%; object-fit: cover; }
 
         .preview-row input.inline-tag-input {
             flex-grow: 1;
@@ -373,12 +358,7 @@
             border-color: var(--danger-red);
         }
 
-        .form-right {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
+        .form-right { display: flex; flex-direction: column; gap: 16px; }
         .divider-text {
             color: var(--text-gray);
             font-size: 11px;
@@ -421,30 +401,51 @@
             border-color: var(--accent-green);
         }
 
+        /* NEW: Lazy Blur Efekt Alanı */
         .img-container {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: var(--bg-darker);
+            background-color: #0e1017;
             position: relative;
+        }
+
+        .img-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transform: translateX(-100%);
+            animation: loading-shimmer 1.6s infinite;
+            z-index: 1;
+        }
+
+        @keyframes loading-shimmer {
+            100% { transform: translateX(100%); }
         }
 
         .img-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s ease;
+            transition: transform 0.6s ease, opacity 0.4s ease, filter 0.4s ease;
             -webkit-user-drag: none;
+            opacity: 0;
+            filter: blur(10px);
         }
 
-        .media-card:hover .img-container img {
-            transform: scale(1.04);
+        .img-container img.loaded {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        .img-container.done-blur::before {
+            display: none;
         }
 
         .card-actions-overlay {
             position: absolute;
-            top: 12px;
-            left: 12px;
+            top: 12px; left: 12px;
             display: flex;
             gap: 8px;
             opacity: 0;
@@ -481,17 +482,11 @@
             transform: scale(1.05);
         }
 
-        .card-action-btn svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
+        .card-action-btn svg { width: 16px; height: 16px; fill: currentColor; }
 
         .card-tags-overlay {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 0; left: 0; width: 100%;
             padding: 30px 14px 14px 14px;
             background: linear-gradient(to top, rgba(5, 5, 8, 0.95) 0%, rgba(5, 5, 8, 0.7) 50%, rgba(5, 5, 8, 0) 100%);
             display: flex;
@@ -515,9 +510,7 @@
 
         .admin-tag-edit-area {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 0; left: 0; width: 100%;
             padding: 14px;
             background: rgba(10, 11, 16, 0.95);
             border-top: 1px solid var(--border-color);
@@ -533,68 +526,38 @@
             border: 1px solid var(--border-color);
             color: var(--text-white);
         }
-        .admin-tag-input:focus {
-            border-color: var(--accent-green);
-        }
+        .admin-tag-input:focus { border-color: var(--accent-green); }
 
         .delete-card-btn {
             position: absolute;
-            top: 12px; 
-            right: 12px;
+            top: 12px; right: 12px;
             background-color: rgba(255, 74, 74, 0.95);
             color: white;
             border: none;
             border-radius: 8px;
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;    
-            justify-content: center; 
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 15; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            pointer-events: auto;
-            padding: 0;
+            width: 34px; height: 34px;
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; transition: all 0.2s ease;
+            z-index: 15; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            pointer-events: auto; padding: 0;
         }
-
-        .delete-card-btn::before {
-            content: "×"; 
-            font-size: 21px;
-            font-weight: bold;
-            position: relative;
-            top: -2px; 
-        }
-
-        .delete-card-btn:hover {
-            background-color: var(--danger-red);
-            transform: scale(1.1);
-        }
+        .delete-card-btn::before { content: "×"; font-size: 21px; font-weight: bold; position: relative; top: -2px; }
+        .delete-card-btn:hover { background-color: var(--danger-red); transform: scale(1.1); }
 
         .card-select-checkbox {
             position: absolute;
             top: 16px; right: 54px; 
-            width: 22px;
-            height: 22px;
+            width: 22px; height: 22px;
             accent-color: var(--accent-green);
-            cursor: pointer;
-            display: none;
-            z-index: 12;
-            border-radius: 6px;
+            cursor: pointer; display: none; z-index: 12; border-radius: 6px;
         }
 
-        .media-card.selected {
-            border-color: var(--accent-green);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
+        .media-card.selected { border-color: var(--accent-green); box-shadow: 0 0 15px var(--accent-glow); }
 
         .pagination-container {
             margin-top: auto;
             padding: 20px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
             user-select: none;
         }
 
@@ -602,13 +565,8 @@
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--text-white);
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            min-width: 44px;
-            justify-content: center;
+            padding: 10px 16px; font-size: 14px; font-weight: 600; border-radius: 8px;
+            transition: all 0.2s ease; min-width: 44px; justify-content: center;
         }
 
         .pagination-btn:hover:not(:disabled) {
@@ -626,42 +584,107 @@
             transform: none !important;
         }
 
+        /* NEW & UPDATED: Gelişmiş Detay Panelli Lightbox */
         .lightbox-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(3, 3, 5, 0.95);
-            backdrop-filter: blur(12px);
+            background-color: rgba(3, 3, 5, 0.96);
+            backdrop-filter: blur(16px);
             z-index: 2000;
             display: none;
             align-items: center;
             justify-content: center;
         }
 
-        .lightbox-content {
+        .lightbox-wrapper {
+            display: flex;
+            width: 90%;
+            max-width: 1400px;
+            height: 85vh;
+            background-color: #0b0c13;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
             position: relative;
-            max-width: 90%;
-            max-height: 85vh;
-            user-select: none;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+        }
+
+        .lightbox-media-side {
+            flex-grow: 1;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            background-color: #05060a;
+            padding: 20px;
         }
 
-        .lightbox-content img {
+        .lightbox-media-side img {
             max-width: 100%;
-            max-height: 85vh;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            border: 1px solid var(--border-color);
+            max-height: 100%;
             object-fit: contain;
+            border-radius: 8px;
+            user-select: none;
             -webkit-user-drag: none;
         }
 
-        /* NEW: Lightbox Üst Sağ Menü (İndirme, Kopyalama ve Kapatma Alanı) */
+        /* NEW: Sağ Detay Paneli */
+        .lightbox-details-side {
+            width: 320px;
+            height: 100%;
+            background-color: var(--bg-card);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 24px;
+            flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .lightbox-details-side.collapsed {
+            display: none;
+        }
+
+        .details-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-gray);
+            margin-bottom: 16px;
+        }
+
+        .detail-item {
+            background-color: var(--bg-darker);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item-label {
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-bottom: 4px;
+        }
+
+        .detail-item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .lightbox-details-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
         .lightbox-top-actions {
             position: absolute;
-            top: -50px;
-            right: 0;
+            top: 20px; right: 20px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -672,15 +695,9 @@
             background-color: rgba(17, 19, 26, 0.85);
             border: 1px solid var(--border-color);
             color: var(--text-white);
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            padding: 0;
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease; padding: 0;
         }
 
         .lightbox-action-btn:hover {
@@ -690,41 +707,23 @@
             transform: scale(1.05);
         }
 
-        .lightbox-action-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
+        .lightbox-action-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
         .lightbox-close-text-btn {
-            font-size: 32px;
-            color: var(--text-gray);
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            transition: color 0.2s;
-            line-height: 1;
-            margin-left: 6px;
+            font-size: 32px; color: var(--text-gray); background: transparent; border: none;
+            cursor: pointer; transition: color 0.2s; line-height: 1; margin-left: 6px;
         }
         .lightbox-close-text-btn:hover { color: white; }
 
         .lightbox-nav-btn {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
             background: rgba(17, 19, 26, 0.8);
             border: 1px solid var(--border-color);
             color: white;
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 2100;
+            width: 50px; height: 50px; border-radius: 50%;
+            font-size: 24px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease; z-index: 2100;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
@@ -735,89 +734,56 @@
             transform: translateY(-50%) scale(1.05);
         }
 
-        .lightbox-prev { left: 40px; }
-        .lightbox-next { right: 40px; }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+
+        @media (max-width: 992px) {
+            .lightbox-wrapper { flex-direction: column; height: 90vh; }
+            .lightbox-details-side { width: 100%; height: auto; border-left: none; border-top: 1px solid var(--border-color); padding: 20px; }
+            .detail-item { margin-bottom: 10px; }
+            .lightbox-top-actions { top: 15px; right: 15px; }
+        }
 
         @media (max-width: 768px) {
-            .lightbox-nav-btn { width: 44px; height: 44px; font-size: 18px; }
-            .lightbox-prev { left: 15px; }
-            .lightbox-next { right: 15px; }
+            .lightbox-nav-btn { width: 40px; height: 40px; font-size: 18px; }
+            .lightbox-prev { left: 10px; }
+            .lightbox-next { right: 10px; }
             .card-actions-overlay { opacity: 1; transform: none; }
-            .lightbox-top-actions { top: -60px; }
         }
 
         .live-logger-panel {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 20px; right: 20px;
             width: 380px;
             background-color: rgba(9, 10, 15, 0.97);
             border: 1px solid var(--border-color);
-            border-radius: 14px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-            z-index: 1000;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            z-index: 1000; overflow: hidden;
+            display: flex; flex-direction: column;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .live-logger-panel.collapsed { width: 200px; }
 
         .logger-header {
-            background-color: var(--bg-card);
-            padding: 14px 16px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-gray);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
+            background-color: var(--bg-card); padding: 14px 16px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
+            border-bottom: 1px solid var(--border-color); color: var(--text-gray);
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none;
         }
 
-        .logger-toggle-btn {
-            font-size: 12px;
-            color: var(--accent-green);
-            font-weight: bold;
-            background: rgba(0, 255, 135, 0.1);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
+        .logger-toggle-btn { font-size: 12px; color: var(--accent-green); font-weight: bold; background: rgba(0, 255, 135, 0.1); padding: 2px 8px; border-radius: 4px; }
 
         .logger-body {
-            padding: 14px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            overflow-y: auto;
-            max-height: 220px;
-            min-height: 140px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            scroll-behavior: smooth;
+            padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            overflow-y: auto; max-height: 220px; min-height: 140px;
+            display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth;
         }
 
-        .live-logger-panel.collapsed .logger-body {
-            max-height: 0px;
-            min-height: 0px;
-            padding: 0px;
-            border: none;
-        }
+        .live-logger-panel.collapsed .logger-body { max-height: 0px; min-height: 0px; padding: 0px; border: none; }
 
-        .log-line {
-            line-height: 1.5;
-            word-break: break-all;
-            padding-bottom: 4px;
-            border-bottom: 1px solid rgba(31, 36, 51, 0.3);
-            display: flex;
-            flex-direction: column;
-        }
-        
+        .log-line { line-height: 1.5; word-break: break-all; padding-bottom: 4px; border-bottom: 1px solid rgba(31, 36, 51, 0.3); display: flex; flex-direction: column; }
         .log-meta { font-size: 9px; color: #4e566d; margin-bottom: 2px; }
         .log-line.success { color: var(--accent-green); }
         .log-line.error { color: var(--danger-red); font-weight: bold; }
@@ -861,18 +827,17 @@
         <div class="pagination-container" id="paginationContainer"></div>
     </div>
 
+    <!-- MODALLAR VE LOG PANELLERİ AYNEN KORUNDU -->
     <div id="passwordModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn" id="closePassModalBtn">&times;</button>
             <h2>Yönetici Doğrulaması</h2>
             <p class="panel-desc">Yükleme paneline erişmek için şifreyi girin.</p>
-            
             <form id="loginForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 16px;">
                 <input type="text" name="username" value="admin" style="display:none;" autocomplete="username">
                 <input type="password" id="passwordInput" name="password" placeholder="Erişim şifresini yazın..." autocomplete="current-password" required>
                 <button type="submit" id="loginBtn" style="width: 100%; justify-content: center;">Onayla</button>
             </form>
-            
             <p id="loginError" style="color: var(--danger-red); display: none; margin-top: 14px; font-size: 14px; font-weight: 600; text-align: center;">Hatalı Şifre!</p>
         </div>
     </div>
@@ -880,12 +845,8 @@
     <div id="uploadModal" class="modal-overlay">
         <div class="modal-content large-panel">
             <button class="modal-close-btn" id="closeUploadModalBtn">&times;</button>
-            
-            <div class="modal-header-area">
-                <h2>Görsel Kontrol Panelini Aç</h2>
-            </div>
+            <div class="modal-header-area"><h2>Görsel Kontrol Panelini Aç</h2></div>
             <p class="panel-desc">Seçtiğiniz medyalar anında sunucu ağında arka plana işlenir.</p>
-            
             <div class="upload-grid">
                 <div class="form-left">
                     <div class="divider-text">Yerel Dosya Seçimi</div>
@@ -893,23 +854,16 @@
                         <span id="dropZoneText">Birden fazla görsel sürükleyin veya tıklayıp seçin</span>
                         <input type="file" id="fileInput" accept="image/*" multiple hidden>
                     </div>
-                    
                     <div class="preview-wrapper" id="previewWrapper" style="display: none;">
                         <div class="preview-container" id="previewContainer"></div>
                     </div>
                 </div>
-                
                 <div class="form-right">
                     <div class="divider-text">Doğrudan Link (Çoklu Giriş Aktif)</div>
                     <textarea id="linkInput" placeholder="Görsel adreslerini yapıştırın...&#10;Birden fazla ise virgülle ayırabilir veya alt satıra geçebilirsiniz."></textarea>
-                    
                     <div class="divider-text">Ortak Etiket Tanımı</div>
                     <input type="text" id="tagInput" placeholder="Genel Etiketler (İsteğe bağlı, virgülle ayırın: lspd, car)">
-                    
-                    <div class="progress-container" id="uploadProgressContainer">
-                        <div class="progress-bar" id="uploadProgressBar"></div>
-                    </div>
-
+                    <div class="progress-container" id="uploadProgressContainer"><div class="progress-bar" id="uploadProgressBar"></div></div>
                     <button id="uploadBtn" style="justify-content: center; margin-top: auto; padding: 16px;">Galeriye Gönder</button>
                 </div>
             </div>
@@ -917,23 +871,49 @@
         </div>
     </div>
 
+    <!-- UPDATED: GELİŞMİŞ LIGHTBOX (DETAY MODLU) -->
     <div id="lightboxOverlay" class="lightbox-overlay">
-        <button class="lightbox-nav-btn lightbox-prev" id="lightboxPrevBtn">‹</button>
-        <div class="lightbox-content">
+        <div class="lightbox-wrapper">
             
-            <div class="lightbox-top-actions">
-                <button class="lightbox-action-btn" title="Linki Kopyala" id="lightboxCopyBtn">
-                    <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                </button>
-                <button class="lightbox-action-btn" title="Görseli İndir" id="lightboxDownloadBtn">
-                    <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18L5.33 11h4.17v4h5v-4h4.17L12 2z"/></svg>
-                </button>
-                <button class="lightbox-close-text-btn" id="closeLightboxBtn">&times;</button>
+            <!-- Sol Taraf: Medya Alanı -->
+            <div class="lightbox-media-side">
+                <button class="lightbox-nav-btn lightbox-prev" id="lightboxPrevBtn">‹</button>
+                <img id="lightboxImg" src="" alt="Önizleme" draggable="false">
+                <button class="lightbox-nav-btn lightbox-next" id="lightboxNextBtn">›</button>
+
+                <!-- Üst Aksiyon Çubuğu -->
+                <div class="lightbox-top-actions">
+                    <button class="lightbox-action-btn" title="Detay Panelini Aç/Kapat" id="lightboxInfoBtn">
+                        <svg viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                    </button>
+                    <button class="lightbox-action-btn" title="Linki Kopyala" id="lightboxCopyBtn">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    </button>
+                    <button class="lightbox-action-btn" title="Görseli İndir" id="lightboxDownloadBtn">
+                        <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18L5.33 11h4.17v4h5v-4h4.17L12 2z"/></svg>
+                    </button>
+                    <button class="lightbox-close-text-btn" id="closeLightboxBtn">&times;</button>
+                </div>
             </div>
 
-            <img id="lightboxImg" src="" alt="Önizleme" draggable="false">
+            <!-- Sağ Taraf: Detay Paneli -->
+            <div class="lightbox-details-side" id="lightboxDetailsSide">
+                <div class="details-title">Görsel Bilgileri</div>
+                
+                <div class="detail-item">
+                    <div class="detail-item-label">Yüklenme Tarihi</div>
+                    <div class="detail-item-value" id="detailDate">-</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-item-label">Medya Etiketleri</div>
+                    <div class="lightbox-details-tags" id="detailTags">
+                        <span class="tag">#yok</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <button class="lightbox-nav-btn lightbox-next" id="lightboxNextBtn">›</button>
     </div>
 
     <div class="live-logger-panel collapsed" id="liveLoggerPanel">
@@ -954,10 +934,8 @@
         let knglSupaClient = null; 
         let isAdminActive = false; 
         let selectedFilesQueue = []; 
-        
         let allGalleryData = []; 
         let filteredData = [];   
-        
         let currentPage = 1;
         const itemsPerPage = 50;
         let currentLightboxIndex = -1;
@@ -1013,6 +991,7 @@
         const uploadProgressContainer = document.getElementById('uploadProgressContainer');
         const uploadProgressBar = document.getElementById('uploadProgressBar');
 
+        // Lightbox Elemanları
         const lightboxOverlay = document.getElementById('lightboxOverlay');
         const lightboxImg = document.getElementById('lightboxImg');
         const closeLightboxBtn = document.getElementById('closeLightboxBtn');
@@ -1020,6 +999,10 @@
         const lightboxNextBtn = document.getElementById('lightboxNextBtn');
         const lightboxCopyBtn = document.getElementById('lightboxCopyBtn');
         const lightboxDownloadBtn = document.getElementById('lightboxDownloadBtn');
+        const lightboxInfoBtn = document.getElementById('lightboxInfoBtn');
+        const lightboxDetailsSide = document.getElementById('lightboxDetailsSide');
+        const detailDate = document.getElementById('detailDate');
+        const detailTags = document.getElementById('detailTags');
 
         const liveLoggerPanel = document.getElementById('liveLoggerPanel');
         const loggerHeader = document.getElementById('loggerHeader');
@@ -1038,7 +1021,7 @@
         }
 
         // ==========================================
-        // LİNK KOPYALAMA VE İNDİRME FONKSİYONLARI (KÜRESEL)
+        // KOPYALAMA VE İNDİRME MOTORU
         // ==========================================
         window.copyImageLink = function(e, url) {
             if (e) e.stopPropagation(); 
@@ -1068,41 +1051,63 @@
         };
 
         // ==========================================
-        // LIGHTBOX VE OK NAVİGASYON MOTORU
+        // LIGHTBOX DETAY VE NAVİGASYON MOTORU
         // ==========================================
         window.openLightbox = function(url) {
             if (!url) return;
             currentLightboxIndex = filteredData.findIndex(item => item.image_url === url);
-            lightboxImg.src = url;
+            updateLightboxContent();
             lightboxOverlay.style.display = 'flex';
         };
 
+        function updateLightboxContent() {
+            if (currentLightboxIndex === -1 || !filteredData[currentLightboxIndex]) return;
+            const currentItem = filteredData[currentLightboxIndex];
+            
+            lightboxImg.src = currentItem.image_url;
+
+            // Detayları Panele Yazma
+            if (currentItem.created_at) {
+                const dateObj = new Date(currentItem.created_at);
+                detailDate.innerText = dateObj.toLocaleDateString('tr-TR') + ' ' + dateObj.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+            } else {
+                detailDate.innerText = "Bilinmiyor";
+            }
+
+            const tagsRaw = currentItem.tags || '';
+            if (tagsRaw.trim()) {
+                detailTags.innerHTML = tagsRaw.split(',').map(t => `<span class="tag">#${t.trim()}</span>`).join('');
+            } else {
+                detailTags.innerHTML = '<span class="tag" style="opacity: 0.5;">#etiket-yok</span>';
+            }
+        }
+
         function navigateLightbox(direction) {
             if (filteredData.length === 0 || currentLightboxIndex === -1) return;
-            
             if (direction === 'next') {
                 currentLightboxIndex = (currentLightboxIndex + 1) % filteredData.length;
             } else if (direction === 'prev') {
                 currentLightboxIndex = (currentLightboxIndex - 1 + filteredData.length) % filteredData.length;
             }
-            
-            lightboxImg.src = filteredData[currentLightboxIndex].image_url;
+            updateLightboxContent();
         }
 
-        // NEW: Lightbox Üst Buton Tetikleyicileri
+        // Info / Detay Panel Aç-Kapat Tetikleyici
+        if (lightboxInfoBtn) {
+            lightboxInfoBtn.addEventListener('click', () => {
+                lightboxDetailsSide.classList.toggle('collapsed');
+            });
+        }
+
         if (lightboxCopyBtn) {
             lightboxCopyBtn.addEventListener('click', (e) => {
-                if (currentLightboxIndex !== -1 && filteredData[currentLightboxIndex]) {
-                    copyImageLink(e, filteredData[currentLightboxIndex].image_url);
-                }
+                if (currentLightboxIndex !== -1) copyImageLink(e, filteredData[currentLightboxIndex].image_url);
             });
         }
 
         if (lightboxDownloadBtn) {
             lightboxDownloadBtn.addEventListener('click', (e) => {
-                if (currentLightboxIndex !== -1 && filteredData[currentLightboxIndex]) {
-                    downloadImage(e, filteredData[currentLightboxIndex].image_url);
-                }
+                if (currentLightboxIndex !== -1) downloadImage(e, filteredData[currentLightboxIndex].image_url);
             });
         }
 
@@ -1113,7 +1118,6 @@
             lightboxOverlay.addEventListener('click', (e) => { if (e.target === lightboxOverlay) lightboxOverlay.style.display = 'none'; });
         }
 
-        // Klavye Kontrolleri
         document.addEventListener('keydown', function(e) {
             if (lightboxOverlay.style.display === 'flex') {
                 if (e.key === 'ArrowRight') navigateLightbox('next');
@@ -1123,7 +1127,22 @@
         });
 
         // ==========================================
-        // MODAL POPUP YÖNETİMİ & ŞİFRELİ GİRİŞ
+        // LAZY BLUR TETİKLEYİCİ FONKSİYON
+        // ==========================================
+        window.triggerLazyBlur = function(imgElement) {
+            if (imgElement.complete) {
+                imgElement.classList.add('loaded');
+                imgElement.parentElement.classList.add('done-blur');
+            } else {
+                imgElement.addEventListener('load', function() {
+                    imgElement.classList.add('loaded');
+                    imgElement.parentElement.classList.add('done-blur');
+                });
+            }
+        };
+
+        // ==========================================
+        // YÖNETİCİ PANELİ GİRİŞ / ÇIKIŞ İŞLEMLERİ
         // ==========================================
         if (mainActionBtn) {
             mainActionBtn.addEventListener('click', function() {
@@ -1173,9 +1192,7 @@
             });
         }
 
-        // ==========================================
-        // STORAGE'DAN SİLME FONKSİYONU
-        // ==========================================
+        // Storage Silme
         async function removeFileFromStorage(imageUrl) {
             if (!imageUrl || !imageUrl.includes('/storage/v1/object/public/gallery/')) return true;
             try {
@@ -1187,7 +1204,7 @@
         }
 
         // ==========================================
-        // DOSYA ÖNİZLEME VE SÜRÜKLE BIRAK
+        // GÖRSEL DOSYA ÖNİZLEME VE DOSYA SÜRÜKLEME
         // ==========================================
         function handleFilesSelection(files) {
             for (let i = 0; i < files.length; i++) {
@@ -1253,7 +1270,7 @@
         }
 
         // ==========================================
-        // GALERİYE GÖNDERME MOTORU
+        // VERİ TABANINA GÖRSEL GÖNDERME MOTORU
         // ==========================================
         if (uploadBtn) {
             uploadBtn.addEventListener('click', async () => {
@@ -1307,7 +1324,7 @@
         }
 
         // ==========================================
-        // VERİ ÇEKME, TÜM VERİDE ARAMA VE SAYFALAMA
+        // VERİLERİ ÇEKME, FİLTRELEME VE YENİLEME
         // ==========================================
         async function fetchGalleryData() {
             if (!galleryGrid || !knglSupaClient) return;
@@ -1384,7 +1401,8 @@
                     </div>
 
                     <div class="img-container">
-                        <img src="${item.image_url}" alt="KNGLRP Media" loading="lazy">
+                        <!-- LAZY BLUR: onload tetikleyicisi entegre edildi -->
+                        <img src="${item.image_url}" alt="KNGLRP Media" onload="triggerLazyBlur(this)">
                         <div class="card-tags-overlay" style="${isAdminActive ? 'display:none;' : (currentTags.trim() ? 'display:flex;' : 'display:none;')}">
                             ${tagsHtml}
                         </div>
@@ -1429,6 +1447,10 @@
                 });
 
                 galleryGrid.appendChild(card);
+                
+                // Manuel kontrol tetikleme
+                const img = card.querySelector('.img-container img');
+                triggerLazyBlur(img);
             });
 
             renderPaginationControls(totalPages);
@@ -1441,39 +1463,26 @@
             if (totalPages <= 1) return;
 
             const prevBtn = document.createElement('button');
-            prevBtn.className = 'pagination-btn';
-            prevBtn.innerText = '«';
-            prevBtn.disabled = currentPage === 1;
+            prevBtn.className = 'pagination-btn'; prevBtn.innerText = '«'; prevBtn.disabled = currentPage === 1;
             prevBtn.addEventListener('click', () => { currentPage--; refreshGalleryUI(); window.scrollTo(0,0); });
             paginationContainer.appendChild(prevBtn);
 
             for (let i = 1; i <= totalPages; i++) {
                 if (totalPages > 6 && Math.abs(currentPage - i) > 2 && i !== 1 && i !== totalPages) {
                     if (i === 2 || i === totalPages - 1) {
-                        const dots = document.createElement('span');
-                        dots.innerText = '...';
-                        dots.style.color = 'var(--text-gray)';
-                        dots.style.padding = '0 5px';
+                        const dots = document.createElement('span'); dots.innerText = '...'; dots.style.color = 'var(--text-gray)'; dots.style.padding = '0 5px';
                         paginationContainer.appendChild(dots);
                     }
                     continue;
                 }
-
                 const pageBtn = document.createElement('button');
-                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
-                pageBtn.innerText = i;
-                pageBtn.addEventListener('click', () => {
-                    currentPage = i;
-                    refreshGalleryUI();
-                    window.scrollTo(0,0);
-                });
+                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`; pageBtn.innerText = i;
+                pageBtn.addEventListener('click', () => { currentPage = i; refreshGalleryUI(); window.scrollTo(0,0); });
                 paginationContainer.appendChild(pageBtn);
             }
 
             const nextBtn = document.createElement('button');
-            nextBtn.className = 'pagination-btn';
-            nextBtn.innerText = '»';
-            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.className = 'pagination-btn'; nextBtn.innerText = '»'; nextBtn.disabled = currentPage === totalPages;
             nextBtn.addEventListener('click', () => { currentPage++; refreshGalleryUI(); window.scrollTo(0,0); });
             paginationContainer.appendChild(nextBtn);
         }
@@ -1494,16 +1503,8 @@
             }
         }
 
-        if (searchInput) {
-            searchInput.addEventListener('input', () => {
-                currentPage = 1;
-                applyFiltersAndSorting();
-            });
-        }
-
-        if (sortSelect) {
-            sortSelect.addEventListener('change', () => { applyFiltersAndSorting(); });
-        }
+        if (searchInput) searchInput.addEventListener('input', () => { currentPage = 1; applyFiltersAndSorting(); });
+        if (sortSelect) sortSelect.addEventListener('change', () => { applyFiltersAndSorting(); });
 
         function updateSelectedCount() {
             const checkedBoxes = document.querySelectorAll('.card-select-checkbox:checked');
