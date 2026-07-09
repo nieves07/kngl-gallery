@@ -65,7 +65,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 48px;
+            margin-bottom: 32px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 24px;
             gap: 20px;
@@ -137,6 +137,47 @@
             display: flex;
             align-items: center;
             gap: 16px;
+        }
+
+        /* ==========================================
+           KNGLRP AÇIKLAMA (ABOUT) ALANI STİLLERİ
+           ========================================== */
+        .about-area {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-area::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--accent-green), #00ffcc);
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .about-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-green);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .about-text {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.6;
         }
 
         input, textarea, select {
@@ -869,6 +910,18 @@
             </div>
         </header>
 
+        <!-- ==========================================
+             KNGLRP HAKKINDA / TANITIM ALANI
+             ========================================== -->
+        <section class="about-area">
+            <div class="about-title">
+                <span>[//_ KNGLRP_MISSION_CONTROL]</span>
+            </div>
+            <p class="about-text">
+                KNGLRP evrenine hoş geldiniz. Bu galeri; şehrin sokaklarında dönen en sıcak hikayeleri, unutulmaz anları, illegal yarışların tozunu ve departmanın operasyonlarını anlık olarak kayıt altına alan dijital bir arşiv projesidir. Aşağıdaki panel üzerinden etiket filtrelemelerini kullanarak rollere, karakterlere veya özel etkinliklere ait anılara hızlıca göz atabilirsiniz.
+            </p>
+        </section>
+
         <main id="galleryGrid" class="gallery-grid"></main>
         
         <div class="pagination-container" id="paginationContainer"></div>
@@ -910,7 +963,7 @@
                     <div class="divider-text">Etiket Ekle</div>
                     <input type="text" id="tagInput" placeholder="(İsteğe bağlı, virgülle ayırın: lspd, car)">
                     <div class="progress-container" id="uploadProgressContainer"><div class="progress-bar" id="uploadProgressBar"></div></div>
-                    <button id="uploadBtn" style="justify-content: center; margin-top: auto; padding: 16px;">Görsel Yükle</button>
+                    <button id="uploadBtn" style="justify-content: center; margin-top: auto; padding: 166px; padding: 16px;">Görsel Yükle</button>
                 </div>
             </div>
             <p id="uploadStatus" style="margin-top: 16px; font-size: 13px; font-weight: 600; text-align: center; color: var(--accent-green);"></p>
