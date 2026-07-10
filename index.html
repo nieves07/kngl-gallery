@@ -38,6 +38,25 @@
             z-index: -1;
         }
 
+        /* Fare İzleyen Arka Plan Işık Efekti */
+        #cursor-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 420px;
+            height: 420px;
+            margin-left: -210px;
+            margin-top: -210px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            filter: blur(15px);
+            will-change: transform;
+            transition: opacity 0.4s ease;
+        }
+
         /* CRT Tarama Çizgisi (Scanline) Overlay */
         #crt-scanline-overlay {
             position: fixed;
@@ -1073,6 +1092,9 @@
         <div id="boot-sequence-terminal"></div>
     </div>
 
+    <!-- Fare İzleyen Arka Plan Işık Efekti -->
+    <div id="cursor-glow"></div>
+
     <!-- CRT Tarama Çizgisi Overlay -->
     <div id="crt-scanline-overlay"></div>
 
@@ -1331,6 +1353,7 @@
                     localStorage.setItem('kngl_site_theme', 'cyber-purple');
                     addLog('Sistem teması değiştirildi: Siber Mor (Neon Night)', 'info');
                 }
+                document.dispatchEvent(new CustomEvent('kngl-theme-changed'));
             });
         }
 
@@ -1912,10 +1935,16 @@
             const frameInterval = 65; // ms cinsinden - büyüttükçe yağmur yavaşlar
 
             function getRainColor() {
-                // Aktif temanın rengini canlı olarak okuyoruz (mor temaya geçince otomatik mor olur)
                 const style = getComputedStyle(document.documentElement);
                 return style.getPropertyValue('--accent-green').trim() || '#00ff87';
             }
+
+            // Performans için: rengi her frame'de okumak yerine önbelleğe alıyoruz,
+            // sadece tema değiştiğinde güncelliyoruz.
+            let cachedColor = getRainColor();
+            document.addEventListener('kngl-theme-changed', () => {
+                cachedColor = getRainColor();
+            });
 
             function resizeCanvas() {
                 canvas.width = window.innerWidth;
@@ -1940,11 +1969,10 @@
                 ctx.fillStyle = 'rgba(5, 5, 8, 0.12)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                const color = getRainColor();
-                ctx.fillStyle = color;
+                // Performans notu: shadowBlur kaldırıldı (her karakter için pahalı bir işlem).
+                // Yumuşak/parlak görünüm zaten canvas'a uygulanan CSS blur filtresiyle sağlanıyor.
+                ctx.fillStyle = cachedColor;
                 ctx.font = fontSize + 'px "JetBrains Mono", monospace';
-                ctx.shadowColor = color;
-                ctx.shadowBlur = 4;
 
                 for (let i = 0; i < drops.length; i++) {
                     const char = rainChars[Math.floor(Math.random() * rainChars.length)];
@@ -1958,11 +1986,13 @@
                     }
                     drops[i]++;
                 }
-
-                ctx.shadowBlur = 0;
             }
 
-            window.addEventListener('resize', resizeCanvas);
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(resizeCanvas, 150);
+            });
             document.addEventListener('DOMContentLoaded', () => {
                 resizeCanvas();
                 requestAnimationFrame(drawRain);
@@ -2030,28 +2060,37 @@
         })();
 
         // ==========================================
-        // FARE HAREKETİYLE GRID PARALLAX EFEKTİ
+        // FARE İZLEYEN ARKA PLAN IŞIK EFEKTİ (Cursor Glow)
         // ==========================================
-        (function initGridParallax() {
-            let targetX = 0, targetY = 0;
-            let currentX = 0, currentY = 0;
-            const maxShift = 18; // px cinsinden maksimum kayma miktarı
+        (function initCursorGlow() {
+            const glow = document.getElementById('cursor-glow');
+            if (!glow) return;
 
+            let targetX = window.innerWidth / 2;
+            let targetY = window.innerHeight / 2;
+            let currentX = targetX;
+            let currentY = targetY;
+            let isActive = false;
+
+            // mousemove'de sadece hedef koordinatı güncelliyoruz (ağır DOM işlemi yok, çok performanslı)
             window.addEventListener('mousemove', (e) => {
-                const nx = (e.clientX / window.innerWidth) - 0.5;
-                const ny = (e.clientY / window.innerHeight) - 0.5;
-                targetX = nx * maxShift;
-                targetY = ny * maxShift;
+                targetX = e.clientX;
+                targetY = e.clientY;
+                if (!isActive) { isActive = true; glow.style.opacity = '0.6'; }
+            }, { passive: true });
+
+            window.addEventListener('mouseleave', () => {
+                glow.style.opacity = '0';
             });
 
-            function animateParallax() {
-                // Yumuşak takip (lerp) ile daha akıcı bir hareket
-                currentX += (targetX - currentX) * 0.06;
-                currentY += (targetY - currentY) * 0.06;
-                document.body.style.backgroundPosition = currentX + 'px ' + currentY + 'px';
-                requestAnimationFrame(animateParallax);
+            function animateGlow() {
+                // Yumuşak takip (lerp) - GPU hızlandırmalı transform kullanılıyor
+                currentX += (targetX - currentX) * 0.09;
+                currentY += (targetY - currentY) * 0.09;
+                glow.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+                requestAnimationFrame(animateGlow);
             }
-            requestAnimationFrame(animateParallax);
+            requestAnimationFrame(animateGlow);
         })();
 
     </script>
