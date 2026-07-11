@@ -1538,7 +1538,7 @@
         let allGalleryData = []; 
         let filteredData = [];   
         let currentPage = 1;
-        const itemsPerPage = 50;
+        const itemsPerPage = 20;
         let currentLightboxIndex = -1;
 
         function addLog(text, type = 'info') {
@@ -1825,7 +1825,7 @@
         });
 
         window.triggerLazyBlur = function(imgElement) {
-            if (imgElement.complete) {
+            if (imgElement.complete && imgElement.currentSrc) {
                 imgElement.classList.add('loaded');
                 imgElement.parentElement.classList.add('done-blur');
             } else {
@@ -1835,6 +1835,32 @@
                 });
             }
         };
+
+        // Gerçek "göz önüne girince yükle" sistemi: kartlar DOM'a eklense bile
+        // görsel dosyası ancak ekrana yaklaşınca indiriliyor. Bu sayede sayfa
+        // değiştiğinde/scroll edilirken onlarca istek aynı anda tetiklenmiyor,
+        // yükler zaman içine yayılıyor ve donma hissi azalıyor.
+        const lazyImageObserver = ('IntersectionObserver' in window)
+            ? new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const src = img.getAttribute('data-src');
+                        if (src) {
+                            img.src = src;
+                            img.removeAttribute('data-src');
+                        }
+                        observer.unobserve(img);
+                    }
+                });
+            }, { root: null, rootMargin: '400px 0px', threshold: 0.01 })
+            : null;
+
+        // IntersectionObserver desteklenmiyorsa (çok eski tarayıcı) tüm görselleri direkt yükle
+        function lazyLoadFallback(img) {
+            const src = img.getAttribute('data-src');
+            if (src) { img.src = src; img.removeAttribute('data-src'); }
+        }
 
         if (mainActionBtn) {
             mainActionBtn.addEventListener('click', function() {
@@ -2140,6 +2166,9 @@
             galleryGrid.classList.remove('page-transition');
             void galleryGrid.offsetWidth;
 
+            // Önceki sayfadan kalan gözlemleri temizle (bellek sızıntısını önler)
+            if (lazyImageObserver) lazyImageObserver.disconnect();
+
             galleryGrid.innerHTML = '';
             if (filteredData.length === 0) {
                 galleryGrid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-gray); padding: 40px;">Görsel bulunamadı.</p>';
@@ -2181,7 +2210,7 @@
                     </div>
 
                     <div class="img-container">
-                        <img src="${item.image_url}" alt="KNGLRP Media" loading="lazy" onload="triggerLazyBlur(this)">
+                        <img data-src="${item.image_url}" alt="KNGLRP Media" onload="triggerLazyBlur(this)">
                         <div class="card-tags-overlay" style="${isAdminActive ? 'display:none;' : (currentTags.trim() ? 'display:flex;' : 'display:none;')}">
                             ${tagsHtml}
                         </div>
@@ -2234,9 +2263,13 @@
                 });
 
                 galleryGrid.appendChild(card);
-                
+
                 const img = card.querySelector('.img-container img');
-                triggerLazyBlur(img);
+                if (lazyImageObserver) {
+                    lazyImageObserver.observe(img);
+                } else {
+                    lazyLoadFallback(img);
+                }
             });
 
             renderPaginationControls(totalPages);
