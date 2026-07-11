@@ -1649,48 +1649,27 @@
         // ==========================================
         const FIVEM_SERVER_CODE = '5oy4vxd';
 
-        // Sırasıyla denenecek kaynaklar: önce doğrudan FiveM uç noktaları,
-        // hepsi CORS/Cloudflare engeline takılırsa bir CORS proxy üzerinden dene.
-        const FIVEM_ENDPOINTS = [
-            `https://servers-frontend.fivem.net/api/servers/single/${FIVEM_SERVER_CODE}`,
-            `https://frontend.cfx-services.net/api/servers/single/${FIVEM_SERVER_CODE}`,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://servers-frontend.fivem.net/api/servers/single/${FIVEM_SERVER_CODE}`)}`,
-            `https://corsproxy.io/?url=${encodeURIComponent(`https://servers-frontend.fivem.net/api/servers/single/${FIVEM_SERVER_CODE}`)}`
-        ];
-
-        function parseFivemPayload(json) {
-            const data = json.Data || json.data || json;
-            const clients = data.clients ?? data.Clients ?? null;
-            const maxClients = data.sv_maxclients ?? data.svMaxclients ?? data.SvMaxclients ?? null;
-            if (clients === null) throw new Error('Beklenmeyen veri formatı');
-            return { clients, maxClients };
-        }
-
         async function updateFivemPlayerCount() {
             const countEl = document.getElementById('fivemPlayerCount');
             const dotEl = document.getElementById('fivemHudDot');
             if (!countEl) return;
 
-            for (let i = 0; i < FIVEM_ENDPOINTS.length; i++) {
-                try {
-                    const res = await fetch(FIVEM_ENDPOINTS[i], { cache: 'no-store' });
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    const json = await res.json();
-                    const { clients, maxClients } = parseFivemPayload(json);
+            try {
+                const res = await fetch(`https://servers-frontend.fivem.net/api/servers/single/${FIVEM_SERVER_CODE}`);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const json = await res.json();
+                const data = json.Data || json.data || {};
 
-                    countEl.innerText = maxClients ? `${clients}/${maxClients}` : `${clients}`;
-                    if (dotEl) dotEl.classList.remove('offline');
-                    return; // başarılı, döngüden çık
-                } catch (err) {
-                    // bu kaynak başarısız oldu, sıradakini dene
-                    continue;
-                }
+                const clients = data.clients ?? data.Clients ?? 0;
+                const maxClients = data.sv_maxclients ?? data.svMaxclients ?? data.SvMaxclients ?? null;
+
+                countEl.innerText = maxClients ? `${clients}/${maxClients}` : `${clients}`;
+                if (dotEl) dotEl.classList.remove('offline');
+            } catch (err) {
+                countEl.innerText = 'Çevrimdışı';
+                if (dotEl) dotEl.classList.add('offline');
+                addLog(`FiveM sunucu verisi alınamadı: ${err.message}`, 'warn');
             }
-
-            // Hiçbir kaynak çalışmadı
-            countEl.innerText = 'Çevrimdışı';
-            if (dotEl) dotEl.classList.add('offline');
-            addLog('FiveM sunucu verisi hiçbir kaynaktan alınamadı.', 'warn');
         }
 
         updateFivemPlayerCount();
